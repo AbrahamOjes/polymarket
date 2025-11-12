@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polymarket - Information Markets on USDC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0f1419;
+            color: #e7e9ea;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Header Styles */
+        .header {
+            background: #1a1f29;
+            padding: 16px 24px;
+            border-bottom: 1px solid #2d333b;
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: #3fb950;
+        }
+        
+        .tagline {
+            font-size: 13px;
+            color: #8b949e;
+            font-weight: 500;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .balance-display {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        
+        .balance-amount {
+            font-size: 18px;
+            font-weight: 700;
+            color: #3fb950;
+        }
+        
+        .balance-label {
+            font-size: 11px;
+            color: #8b949e;
+        }
+        
+        .deposit-btn {
+            background: linear-gradient(135deg, #238636, #2ea043);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(35, 134, 54, 0.3);
+        }
+        
+        .deposit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(35, 134, 54, 0.4);
+        }
+        
+        /* Info Banner */
+        .info-banner {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            padding: 12px 24px;
+            border-bottom: 2px solid #2563eb;
+        }
+        
+        .banner-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .banner-icon {
+            font-size: 20px;
+        }
+        
+        .banner-text {
+            flex: 1;
+            font-size: 13px;
+            color: #e0e7ff;
+        }
+        
+        .banner-text strong {
+            color: white;
+            font-weight: 700;
+        }
+        
+        .learn-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 6px 14px;
+            border-radius: 6px;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .learn-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 24px;
+            padding: 24px;
+        }
+        
+        /* Market Card */
+        .market-card {
+            background: #1a1f29;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid #2d333b;
+            transition: all 0.2s;
+        }
+        
+        .market-card:hover {
+            border-color: #3fb950;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .market-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+        
+        .market-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .category-badge {
+            background: #2d333b;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #8b949e;
+        }
+        
+        .live-badge {
+            background: #da3633;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .market-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        
+        .market-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: #8b949e;
+        }
+        
+        .info-icon {
+            font-size: 14px;
+        }
+        
+        /* Market Intelligence Section */
+        .market-intelligence {
+            background: #0d1117;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .intelligence-title {
+            font-size: 12px;
+            color: #8b949e;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        
+        .insight-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #e7e9ea;
+        }
+        
+        .insight-icon {
+            color: #3fb950;
+        }
+        
+        /* Outcome Options */
+        .outcome-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .outcome-card {
+            background: #0d1117;
+            border: 2px solid #2d333b;
+            border-radius: 10px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .outcome-card:hover {
+            border-color: #3fb950;
+            transform: translateY(-2px);
+        }
+        
+        .outcome-card.selected {
+            border-color: #3fb950;
+            background: rgba(63, 185, 80, 0.1);
+        }
+        
+        .outcome-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .outcome-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #e7e9ea;
+        }
+        
+        .outcome-traders {
+            font-size: 11px;
+            color: #8b949e;
+        }
+        
+        .probability-display {
+            margin-bottom: 10px;
+        }
+        
+        .probability-large {
+            font-size: 32px;
+            font-weight: 800;
+            color: #3fb950;
+            line-height: 1;
+        }
+        
+        .probability-label {
+            font-size: 11px;
+            color: #8b949e;
+            margin-top: 2px;
+        }
+        
+        .price-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #2d333b;
+        }
+        
+        .price-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .price-label {
+            font-size: 10px;
+            color: #8b949e;
+            margin-bottom: 2px;
+        }
+        
+        .price-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #e7e9ea;
+        }
+        
+        .probability-bar {
+            width: 100%;
+            height: 6px;
+            background: #2d333b;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        
+        .probability-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3fb950, #238636);
+            transition: width 0.3s;
+        }
+        
+        /* Market Stats */
+        .market-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid #2d333b;
+            font-size: 12px;
+            color: #8b949e;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .view-research {
+            color: #3fb950;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .view-research:hover {
+            text-decoration: underline;
+        }
+        
+        /* Prediction Panel */
+        .prediction-panel {
+            background: #1a1f29;
+            border-radius: 12px;
+            padding: 24px;
+            position: sticky;
+            top: 20px;
+            border: 1px solid #2d333b;
+        }
+        
+        .panel-header {
+            margin-bottom: 20px;
+        }
+        
+        .panel-title {
+            font-size: 14px;
+            color: #8b949e;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        
+        .selected-market {
+            font-size: 16px;
+            font-weight: 600;
+            color: #e7e9ea;
+            margin-bottom: 4px;
+        }
+        
+        .selected-outcome {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(63, 185, 80, 0.1);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #3fb950;
+        }
+        
+        /* Probability Section */
+        .probability-section {
+            background: #0d1117;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .prob-label {
+            font-size: 12px;
+            color: #8b949e;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .prob-value {
+            font-size: 48px;
+            font-weight: 800;
+            color: #3fb950;
+            margin-bottom: 12px;
+            line-height: 1;
+        }
+        
+        .prob-explanation {
+            font-size: 12px;
+            color: #8b949e;
+            margin-bottom: 12px;
+        }
+        
+        .prob-bar-container {
+            width: 100%;
+            height: 10px;
+            background: #2d333b;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .prob-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #238636, #3fb950);
+            width: 71%;
+            transition: width 0.3s;
+        }
+        
+        /* Position Size */
+        .position-section {
+            margin: 24px 0;
+        }
+        
+        .section-label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #e7e9ea;
+        }
+        
+        .amount-presets {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .preset-btn {
+            padding: 12px 8px;
+            background: #0d1117;
+            border: 2px solid #2d333b;
+            border-radius: 8px;
+            color: #e7e9ea;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .preset-btn:hover {
+            border-color: #3fb950;
+        }
+        
+        .preset-btn.selected {
+            background: rgba(63, 185, 80, 0.1);
+            border-color: #3fb950;
+            color: #3fb950;
+        }
+        
+        .custom-amount {
+            display: flex;
+            align-items: center;
+            background: #0d1117;
+            border: 2px solid #2d333b;
+            border-radius: 8px;
+            padding: 4px 4px 4px 16px;
+            margin-top: 8px;
+        }
+        
+        .custom-amount:focus-within {
+            border-color: #3fb950;
+        }
+        
+        .currency-label {
+            color: #8b949e;
+            font-size: 16px;
+            font-weight: 700;
+            margin-right: 8px;
+        }
+        
+        .amount-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #e7e9ea;
+            font-size: 16px;
+            font-weight: 700;
+            padding: 12px 8px;
+            outline: none;
+        }
+        
+        /* Calculation Display */
+        .calculation-display {
+            background: #0d1117;
+            border-radius: 10px;
+            padding: 16px;
+            margin: 20px 0;
+        }
+        
+        .calc-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .calc-row:last-child {
+            margin-bottom: 0;
+            padding-top: 10px;
+            border-top: 1px solid #2d333b;
+        }
+        
+        .calc-label {
+            color: #8b949e;
+        }
+        
+        .calc-value {
+            font-weight: 700;
+            color: #e7e9ea;
+        }
+        
+        .calc-value.positive {
+            color: #3fb950;
+        }
+        
+        .calc-value.large {
+            font-size: 20px;
+        }
+        
+        /* Action Button */
+        .action-button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #238636, #2ea043);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(35, 134, 54, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(35, 134, 54, 0.4);
+        }
+        
+        .action-button:disabled {
+            background: #2d333b;
+            color: #8b949e;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Info Footer */
+        .panel-footer {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #2d333b;
+            font-size: 12px;
+            color: #8b949e;
+            text-align: center;
+        }
+        
+        .footer-highlight {
+            color: #3fb950;
+            font-weight: 600;
+        }
+        
+        /* Educational Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: #1a1f29;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid #2d333b;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #e7e9ea;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            color: #8b949e;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .close-modal:hover {
+            color: #e7e9ea;
+        }
+        
+        .modal-section {
+            margin-bottom: 24px;
+        }
+        
+        .modal-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #3fb950;
+            margin-bottom: 12px;
+        }
+        
+        .modal-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #8b949e;
+            margin-bottom: 12px;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 16px 0;
+        }
+        
+        .comparison-item {
+            background: #0d1117;
+            padding: 16px;
+            border-radius: 8px;
+        }
+        
+        .comparison-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .comparison-title.bad {
+            color: #da3633;
+        }
+        
+        .comparison-title.good {
+            color: #3fb950;
+        }
+        
+        .comparison-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .comparison-list li {
+            font-size: 13px;
+            color: #8b949e;
+            margin-bottom: 6px;
+            padding-left: 16px;
+            position: relative;
+        }
+        
+        .comparison-list li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .prediction-panel {
+                position: relative;
+                top: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .outcome-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .amount-presets {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo">Polymarket</div>
+                <div class="tagline">Information Markets</div>
+            </div>
+            <div class="header-right">
+                <div class="balance-display">
+                    <div class="balance-amount">$125.50 USDC</div>
+                    <div class="balance-label">Your Balance</div>
+                </div>
+                <button class="deposit-btn">
+                    ⚡ Deposit in 30s
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Info Banner -->
+    <div class="info-banner">
+        <div class="banner-content">
+            <span class="banner-icon">💎</span>
+            <div class="banner-text">
+                <strong>USDC-Powered Forecasting</strong> • Stable currency • Transparent settlement • 2% fees (vs 15-30% traditional)
+            </div>
+            <button class="learn-btn" onclick="showModal()">What is this?</button>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="markets-section">
+            <!-- Market Card 1: Sports -->
+            <div class="market-card">
+                <div class="market-meta">
+                    <span class="category-badge">⚽ SPORTS</span>
+                    <span class="live-badge">
+                        <span class="live-dot"></span>
+                        LIVE
+                    </span>
+                </div>
+                
+                <div class="market-title">
+                    Will Arsenal win vs Sunderland?
+                </div>
+                
+                <div class="market-info">
+                    <div class="info-item">
+                        <span class="info-icon">🕐</span>
+                        <span>Resolves: Today 5:00 PM</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">💰</span>
+                        <span>$2.4M USDC volume</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">👥</span>
+                        <span>3,340 forecasters</span>
+                    </div>
+                </div>
+                
+                <!-- Market Intelligence -->
+                <div class="market-intelligence">
+                    <div class="intelligence-title">📊 Market Intelligence</div>
+                    <div class="insight-item">
+                        <span class="insight-icon">✓</span>
+                        <span>Arsenal ranked 2nd in Premier League</span>
+                    </div>
+                    <div class="insight-item">
+                        <span class="insight-icon">✓</span>
+                        <span>Strong away record this season (8-2-1)</span>
+                    </div>
+                    <div class="insight-item">
+                        <span class="insight-icon">✓</span>
+                        <span>Sunderland missing 3 key players</span>
+                    </div>
+                </div>
+                
+                <!-- Outcome Options -->
+                <div class="outcome-options">
+                    <div class="outcome-card selected" onclick="selectOutcome(this, 'Arsenal wins', 71, 0.71)">
+                        <div class="outcome-header">
+                            <div class="outcome-label">Arsenal Wins</div>
+                            <div class="outcome-traders">2,450 YES</div>
+                        </div>
+                        <div class="probability-display">
+                            <div class="probability-large">71%</div>
+                            <div class="probability-label">Market Probability</div>
+                        </div>
+                        <div class="price-display">
+                            <div class="price-item">
+                                <div class="price-label">Share Price</div>
+                                <div class="price-value">$0.71</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="price-label">Return</div>
+                                <div class="price-value">1.41x</div>
+                            </div>
+                        </div>
+                        <div class="probability-bar">
+                            <div class="probability-fill" style="width: 71%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="outcome-card" onclick="selectOutcome(this, 'Arsenal loses', 29, 0.29)">
+                        <div class="outcome-header">
+                            <div class="outcome-label">Arsenal Loses</div>
+                            <div class="outcome-traders">890 YES</div>
+                        </div>
+                        <div class="probability-display">
+                            <div class="probability-large">29%</div>
+                            <div class="probability-label">Market Probability</div>
+                        </div>
+                        <div class="price-display">
+                            <div class="price-item">
+                                <div class="price-label">Share Price</div>
+                                <div class="price-value">$0.29</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="price-label">Return</div>
+                                <div class="price-value">3.45x</div>
+                            </div>
+                        </div>
+                        <div class="probability-bar">
+                            <div class="probability-fill" style="width: 29%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Market Stats -->
+                <div class="market-stats">
+                    <div class="stat-item">
+                        📈 Last 24h: +5% for Arsenal
+                    </div>
+                    <div class="view-research" onclick="alert('Research tools: Latest news, team stats, head-to-head records, expert analysis')">
+                        View Research →
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Market Card 2: Politics -->
+            <div class="market-card">
+                <div class="market-meta">
+                    <span class="category-badge">🗳️ POLITICS</span>
+                </div>
+                
+                <div class="market-title">
+                    Will US implement crypto regulations by December 2025?
+                </div>
+                
+                <div class="market-info">
+                    <div class="info-item">
+                        <span class="info-icon">🕐</span>
+                        <span>Resolves: Dec 31, 2025</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">💰</span>
+                        <span>$4.2M USDC volume</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">👥</span>
+                        <span>5,890 forecasters</span>
+                    </div>
+                </div>
+                
+                <!-- Market Intelligence -->
+                <div class="market-intelligence">
+                    <div class="intelligence-title">📊 Market Intelligence</div>
+                    <div class="insight-item">
+                        <span class="insight-icon">✓</span>
+                        <span>SEC chair comments suggest framework coming</span>
+                    </div>
+                    <div class="insight-item">
+                        <span class="insight-icon">✓</span>
+                        <span>Bipartisan support in Senate committee</span>
+                    </div>
+                    <div class="insight-item">
+                        <span class="insight-icon">✓</span>
+                        <span>Industry lobbying intensifying</span>
+                    </div>
+                </div>
+                
+                <!-- Outcome Options -->
+                <div class="outcome-options">
+                    <div class="outcome-card" onclick="selectOutcome(this, 'Regulations passed', 61, 0.61)">
+                        <div class="outcome-header">
+                            <div class="outcome-label">YES - Regulations</div>
+                            <div class="outcome-traders">3,850 YES</div>
+                        </div>
+                        <div class="probability-display">
+                            <div class="probability-large">61%</div>
+                            <div class="probability-label">Market Probability</div>
+                        </div>
+                        <div class="price-display">
+                            <div class="price-item">
+                                <div class="price-label">Share Price</div>
+                                <div class="price-value">$0.61</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="price-label">Return</div>
+                                <div class="price-value">1.64x</div>
+                            </div>
+                        </div>
+                        <div class="probability-bar">
+                            <div class="probability-fill" style="width: 61%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="outcome-card" onclick="selectOutcome(this, 'No regulations', 39, 0.39)">
+                        <div class="outcome-header">
+                            <div class="outcome-label">NO - No Regulations</div>
+                            <div class="outcome-traders">2,040 YES</div>
+                        </div>
+                        <div class="probability-display">
+                            <div class="probability-large">39%</div>
+                            <div class="probability-label">Market Probability</div>
+                        </div>
+                        <div class="price-display">
+                            <div class="price-item">
+                                <div class="price-label">Share Price</div>
+                                <div class="price-value">$0.39</div>
+                            </div>
+                            <div class="price-item">
+                                <div class="price-label">Return</div>
+                                <div class="price-value">2.56x</div>
+                            </div>
+                        </div>
+                        <div class="probability-bar">
+                            <div class="probability-fill" style="width: 39%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Market Stats -->
+                <div class="market-stats">
+                    <div class="stat-item">
+                        📈 Trending up after recent hearing
+                    </div>
+                    <div class="view-research" onclick="alert('Research tools: Recent legislation, expert opinions, historical precedent, poll data')">
+                        View Research →
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Prediction Panel -->
+        <div class="prediction-panel">
+            <div class="panel-header">
+                <div class="panel-title">Your Prediction</div>
+                <div class="selected-market">Arsenal vs Sunderland</div>
+                <div class="selected-outcome" id="selectedOutcome">
+                    <span>✓</span>
+                    <span id="outcomeText">Arsenal wins</span>
+                </div>
+            </div>
+            
+            <!-- Probability Display -->
+            <div class="probability-section">
+                <div class="prob-label">Market Consensus</div>
+                <div class="prob-value" id="probValue">71%</div>
+                <div class="prob-explanation">
+                    Based on <strong id="traderCount">3,340</strong> forecasters' analysis
+                </div>
+                <div class="prob-bar-container">
+                    <div class="prob-bar-fill" id="probBar" style="width: 71%"></div>
+                </div>
+            </div>
+            
+            <!-- Position Size -->
+            <div class="position-section">
+                <div class="section-label">How much USDC to spend?</div>
+                <div class="amount-presets">
+                    <button class="preset-btn" onclick="setAmount(5)">$5</button>
+                    <button class="preset-btn selected" onclick="setAmount(10)">$10</button>
+                    <button class="preset-btn" onclick="setAmount(25)">$25</button>
+                </div>
+                <div class="custom-amount">
+                    <span class="currency-label">$</span>
+                    <input type="number" class="amount-input" id="amountInput" value="10" min="1" step="0.01" oninput="updateCalculations()">
+                </div>
+            </div>
+            
+            <!-- Calculations -->
+            <div class="calculation-display">
+                <div class="calc-row">
+                    <span class="calc-label">You spend</span>
+                    <span class="calc-value" id="spendAmount">$10.00 USDC</span>
+                </div>
+                <div class="calc-row">
+                    <span class="calc-label">Shares you buy</span>
+                    <span class="calc-value" id="sharesAmount">14.08</span>
+                </div>
+                <div class="calc-row">
+                    <span class="calc-label">If correct</span>
+                    <span class="calc-value positive" id="profitAmount">+$4.08</span>
+                </div>
+                <div class="calc-row">
+                    <span class="calc-label">Total Payout</span>
+                    <span class="calc-value positive large" id="payoutAmount">$14.08 USDC</span>
+                </div>
+            </div>
+            
+            <!-- Action Button -->
+            <button class="action-button" onclick="alert('Prediction placed! Market orders execute instantly on-chain.')">
+                Make Prediction
+            </button>
+            
+            <!-- Footer Info -->
+            <div class="panel-footer">
+                💎 <span class="footer-highlight">USDC stays in your control</span> • Transparent settlement • Withdraw anytime
+            </div>
+        </div>
+    </div>
+    
+    <!-- Educational Modal -->
+    <div class="modal" id="educationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">What is Polymarket?</h2>
+                <button class="close-modal" onclick="closeModal()">×</button>
+            </div>
+            
+            <div class="modal-section">
+                <h3 class="modal-section-title">Information Markets, Not Gambling</h3>
+                <p class="modal-text">
+                    Polymarket is a prediction market where you trade on the outcomes of real-world events. 
+                    Think of it like a stock market for events.
+                </p>
+            </div>
+            
+            <div class="comparison-grid">
+                <div class="comparison-item">
+                    <div class="comparison-title bad">🎰 Traditional Gambling</div>
+                    <ul class="comparison-list">
+                        <li>Games of chance</li>
+                        <li>House always has edge</li>
+                        <li>Random outcomes</li>
+                        <li>Entertainment focus</li>
+                    </ul>
+                </div>
+                
+                <div class="comparison-item">
+                    <div class="comparison-title good">📊 Prediction Markets</div>
+                    <ul class="comparison-list">
+                        <li>Real-world events</li>
+                        <li>Peer-to-peer trading</li>
+                        <li>Research-based</li>
+                        <li>Information tool</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="modal-section">
+                <h3 class="modal-section-title">How It Works</h3>
+                <p class="modal-text">
+                    <strong>1. Market Prices = Probabilities</strong><br>
+                    $0.71 per share means the market thinks there's a 71% chance Arsenal wins.
+                </p>
+                <p class="modal-text">
+                    <strong>2. Buy Shares Based on Research</strong><br>
+                    If you think the market is wrong (based on your analysis), you can profit from that edge.
+                </p>
+                <p class="modal-text">
+                    <strong>3. Shares Pay $1.00 If Correct</strong><br>
+                    When the event resolves, correct predictions receive $1.00 per share. Wrong predictions get $0.00.
+                </p>
+            </div>
+            
+            <div class="modal-section">
+                <h3 class="modal-section-title">Why USDC?</h3>
+                <p class="modal-text">
+                    <strong>✓ Stable Value:</strong> Always worth $1.00 (unlike volatile currencies)<br>
+                    <strong>✓ Global Access:</strong> Trade from anywhere with internet<br>
+                    <strong>✓ Transparent:</strong> Every transaction on blockchain<br>
+                    <strong>✓ Lower Fees:</strong> 2% vs 15-30% traditional platforms<br>
+                    <strong>✓ Your Control:</strong> Your USDC, your custody
+                </p>
+            </div>
+            
+            <div class="modal-section">
+                <h3 class="modal-section-title">Forecast Responsibly</h3>
+                <p class="modal-text">
+                    • Only trade based on research and analysis<br>
+                    • Set position limits you're comfortable with<br>
+                    • Learn from incorrect predictions<br>
+                    • Use as an information and research tool
+                </p>
+            </div>
+            
+            <button class="action-button" onclick="closeModal()">
+                Start Forecasting
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        let currentPrice = 0.71;
+        let currentProb = 71;
+        
+        function selectOutcome(element, outcome, prob, price) {
+            // Remove selected class from all cards
+            document.querySelectorAll('.outcome-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked card
+            element.classList.add('selected');
+            
+            // Update panel
+            currentPrice = price;
+            currentProb = prob;
+            
+            document.getElementById('outcomeText').textContent = outcome;
+            document.getElementById('probValue').textContent = prob + '%';
+            document.getElementById('probBar').style.width = prob + '%';
+            
+            updateCalculations();
+        }
+        
+        function setAmount(amount) {
+            // Remove selected class from all presets
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked button
+            event.target.classList.add('selected');
+            
+            // Update input
+            document.getElementById('amountInput').value = amount;
+            
+            updateCalculations();
+        }
+        
+        function updateCalculations() {
+            const amount = parseFloat(document.getElementById('amountInput').value) || 0;
+            const shares = amount / currentPrice;
+            const payout = shares * 1.00; // Each share pays $1 if correct
+            const profit = payout - amount;
+            
+            document.getElementById('spendAmount').textContent = '$' + amount.toFixed(2) + ' USDC';
+            document.getElementById('sharesAmount').textContent = shares.toFixed(2);
+            document.getElementById('profitAmount').textContent = '+$' + profit.toFixed(2);
+            document.getElementById('payoutAmount').textContent = '$' + payout.toFixed(2) + ' USDC';
+        }
+        
+        function showModal() {
+            document.getElementById('educationModal').classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('educationModal').classList.remove('active');
+        }
+        
+        // Initialize calculations
+        updateCalculations();
+        
+        // Close modal on outside click
+        document.getElementById('educationModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

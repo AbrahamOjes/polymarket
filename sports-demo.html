@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Live sports prediction markets">
+  <title>Sports Markets - Polymarket</title>
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="src/styles/reset.css">
+  <link rel="stylesheet" href="src/styles/tokens.css">
+  <link rel="stylesheet" href="src/components/atoms/Button.css">
+  <link rel="stylesheet" href="src/components/atoms/Typography.css">
+  <link rel="stylesheet" href="src/components/molecules/MarketCard.css">
+  
+  <style>
+    .container {
+      max-width: var(--container-xl);
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-lg) 0;
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: var(--space-2xl);
+    }
+    
+    .header__logo {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+    }
+    
+    .header__balance {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-sm) var(--space-md);
+      background: var(--color-surface);
+      border-radius: var(--radius-md);
+      font-family: var(--font-family-mono);
+      font-variant-numeric: tabular-nums;
+    }
+    
+    .page-header {
+      margin-bottom: var(--space-2xl);
+    }
+    
+    .page-header__title {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-sm);
+    }
+    
+    .page-header__icon {
+      font-size: var(--font-size-3xl);
+    }
+    
+    .filters {
+      display: flex;
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+      flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+      padding: var(--space-sm) var(--space-md);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-secondary);
+      transition: all var(--duration-fast);
+      cursor: pointer;
+    }
+    
+    .filter-btn:hover {
+      border-color: var(--color-info);
+      color: var(--color-text-primary);
+    }
+    
+    .filter-btn--active {
+      background: var(--color-info);
+      border-color: var(--color-info);
+      color: white;
+    }
+    
+    .market-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: var(--space-lg);
+      margin-bottom: var(--space-3xl);
+    }
+    
+    .info-banner {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-xl);
+    }
+    
+    .info-banner__title {
+      color: var(--color-info);
+      margin-bottom: var(--space-sm);
+    }
+    
+    @media (max-width: 768px) {
+      .market-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header container">
+    <div class="header__logo">Polymarket</div>
+    <div class="header__balance">
+      <span class="text-body-sm">Balance:</span>
+      <span class="text-body text-success">$250.00 USDC</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-header__title">
+        <span class="page-header__icon">⚽</span>
+        <h1 class="text-h1">Sports Markets</h1>
+      </div>
+      <p class="text-body text-secondary">
+        Live prediction markets for sports events. Real-time odds from thousands of forecasters.
+      </p>
+    </div>
+
+    <!-- Info Banner -->
+    <div class="info-banner">
+      <h3 class="info-banner__title text-h4">📊 Demo Mode</h3>
+      <p class="text-body-sm text-secondary">
+        Showing example sports markets with realistic data. In production, this would connect to Polymarket's API 
+        via a backend proxy to fetch live market data.
+      </p>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters" id="filters">
+      <button class="filter-btn filter-btn--active" data-sport="all">All Sports</button>
+      <button class="filter-btn" data-sport="football">🏈 Football</button>
+      <button class="filter-btn" data-sport="basketball">🏀 Basketball</button>
+      <button class="filter-btn" data-sport="soccer">⚽ Soccer</button>
+      <button class="filter-btn" data-sport="baseball">⚾ Baseball</button>
+      <button class="filter-btn" data-sport="mma">🥊 MMA/Boxing</button>
+    </div>
+
+    <!-- Market Grid -->
+    <div id="market-grid" class="market-grid">
+      <!-- Markets will be dynamically inserted here -->
+    </div>
+  </main>
+
+  <script>
+    // Demo sports market data (realistic examples)
+    const demoMarkets = [
+      {
+        id: '1',
+        question: 'Will the Kansas City Chiefs win Super Bowl LVIII?',
+        category: 'FOOTBALL',
+        categoryIcon: '🏈',
+        sport: 'football',
+        probability: 68,
+        probabilityLevel: 'high',
+        probabilityLabel: 'likely YES',
+        volume: '$4.2M',
+        traders: 5240,
+        status: 'live',
+        description: 'The Kansas City Chiefs are currently favored to win Super Bowl LVIII. Patrick Mahomes has led the team to multiple championships, and they have a strong roster this season.'
+      },
+      {
+        id: '2',
+        question: 'Will the San Francisco 49ers make the playoffs?',
+        category: 'FOOTBALL',
+        categoryIcon: '🏈',
+        sport: 'football',
+        probability: 82,
+        probabilityLevel: 'high',
+        probabilityLabel: 'very likely YES',
+        volume: '$2.8M',
+        traders: 3890,
+        status: 'live',
+        description: 'The 49ers have shown strong performance this season with a solid defense and effective offense. Their current record puts them in a favorable position for playoff contention.'
+      },
+      {
+        id: '3',
+        question: 'Will LeBron James score 40+ points in his next game?',
+        category: 'BASKETBALL',
+        categoryIcon: '🏀',
+        sport: 'basketball',
+        probability: 34,
+        probabilityLevel: 'low',
+        probabilityLabel: 'likely NO',
+        volume: '$1.2M',
+        traders: 2156,
+        status: 'live',
+        description: 'LeBron James has been averaging 25 points per game this season. While he\'s capable of explosive performances, 40+ points would be above his recent average.'
+      },
+      {
+        id: '4',
+        question: 'Will the Lakers win their next 3 games?',
+        category: 'BASKETBALL',
+        categoryIcon: '🏀',
+        sport: 'basketball',
+        probability: 45,
+        probabilityLevel: 'medium',
+        probabilityLabel: 'uncertain',
+        volume: '$980K',
+        traders: 1834,
+        status: 'live',
+        description: 'The Lakers face a challenging schedule with games against top-tier teams. Their recent form has been inconsistent, making this outcome uncertain.'
+      },
+      {
+        id: '5',
+        question: 'Will Manchester City win the Premier League?',
+        category: 'SOCCER',
+        categoryIcon: '⚽',
+        sport: 'soccer',
+        probability: 76,
+        probabilityLevel: 'high',
+        probabilityLabel: 'likely YES',
+        volume: '$5.6M',
+        traders: 6720,
+        status: 'live',
+        description: 'Manchester City leads the Premier League table with consistent performances. Pep Guardiola\'s squad has depth and quality across all positions.'
+      },
+      {
+        id: '6',
+        question: 'Will Arsenal finish in top 4 this season?',
+        category: 'SOCCER',
+        categoryIcon: '⚽',
+        sport: 'soccer',
+        probability: 71,
+        probabilityLevel: 'high',
+        probabilityLabel: 'likely YES',
+        volume: '$3.4M',
+        traders: 4560,
+        status: 'live',
+        description: 'Arsenal has shown strong form under Mikel Arteta. Their attacking prowess and solid defense make them strong contenders for Champions League qualification.'
+      },
+      {
+        id: '7',
+        question: 'Will the Yankees win the World Series?',
+        category: 'BASEBALL',
+        categoryIcon: '⚾',
+        sport: 'baseball',
+        probability: 52,
+        probabilityLevel: 'medium',
+        probabilityLabel: 'uncertain',
+        volume: '$2.1M',
+        traders: 2890,
+        status: 'live',
+        description: 'The Yankees have a talented roster with strong pitching and hitting. However, the playoffs are unpredictable and several teams are competitive this year.'
+      },
+      {
+        id: '8',
+        question: 'Will Aaron Judge hit 60+ home runs this season?',
+        category: 'BASEBALL',
+        categoryIcon: '⚾',
+        sport: 'baseball',
+        probability: 28,
+        probabilityLevel: 'low',
+        probabilityLabel: 'likely NO',
+        volume: '$890K',
+        traders: 1456,
+        status: 'live',
+        description: 'Aaron Judge is having a strong season but is currently on pace for around 45-50 home runs. Reaching 60+ would require an exceptional second half.'
+      },
+      {
+        id: '9',
+        question: 'Will Jon Jones defend his heavyweight title successfully?',
+        category: 'MMA',
+        categoryIcon: '🥊',
+        sport: 'mma',
+        probability: 79,
+        probabilityLevel: 'high',
+        probabilityLabel: 'likely YES',
+        volume: '$1.8M',
+        traders: 3240,
+        status: 'live',
+        description: 'Jon Jones is widely considered one of the greatest MMA fighters. His technical skills and experience give him a significant advantage in his upcoming title defense.'
+      },
+      {
+        id: '10',
+        question: 'Will there be a knockout in the next UFC main event?',
+        category: 'MMA',
+        categoryIcon: '🥊',
+        sport: 'mma',
+        probability: 58,
+        probabilityLevel: 'medium',
+        probabilityLabel: 'uncertain',
+        volume: '$1.1M',
+        traders: 2340,
+        status: 'live',
+        description: 'Both fighters in the main event are known for their striking power. However, they also have strong defensive skills, making the outcome uncertain.'
+      },
+      {
+        id: '11',
+        question: 'Will Novak Djokovic win the next Grand Slam?',
+        category: 'TENNIS',
+        categoryIcon: '🎾',
+        sport: 'tennis',
+        probability: 64,
+        probabilityLevel: 'high',
+        probabilityLabel: 'likely YES',
+        volume: '$2.3M',
+        traders: 3450,
+        status: 'live',
+        description: 'Djokovic has been dominant in Grand Slam tournaments. His experience and current form make him the favorite for the upcoming major.'
+      },
+      {
+        id: '12',
+        question: 'Will the Boston Celtics win the NBA Championship?',
+        category: 'BASKETBALL',
+        categoryIcon: '🏀',
+        sport: 'basketball',
+        probability: 55,
+        probabilityLevel: 'medium',
+        probabilityLabel: 'uncertain',
+        volume: '$3.7M',
+        traders: 4890,
+        status: 'live',
+        description: 'The Celtics have a strong roster with Jayson Tatum and Jaylen Brown leading the way. They face tough competition from other Eastern Conference teams.'
+      }
+    ];
+
+    let allMarkets = demoMarkets;
+    let currentFilter = 'all';
+
+    // Initial render
+    renderMarkets(allMarkets);
+
+    function renderMarkets(markets) {
+      const grid = document.getElementById('market-grid');
+      grid.innerHTML = '';
+      
+      markets.forEach(market => {
+        const card = createMarketCard(market);
+        grid.appendChild(card);
+      });
+    }
+
+    function createMarketCard(market) {
+      const article = document.createElement('article');
+      article.className = 'market-card';
+      article.setAttribute('role', 'article');
+      article.setAttribute('tabindex', '0');
+      
+      article.innerHTML = `
+        <header class="market-card__header">
+          <span class="market-card__category">
+            <span class="market-card__category-icon">${market.categoryIcon}</span>
+            <span>${market.category}</span>
+          </span>
+          <span class="market-card__status market-card__status--${market.status}">${market.status.toUpperCase()}</span>
+        </header>
+        
+        <h3 class="market-card__question">${market.question}</h3>
+        
+        <div class="market-card__probability">
+          <div class="market-card__probability-value market-card__probability-value--${market.probabilityLevel}">
+            ${market.probability}%
+          </div>
+          <div class="market-card__probability-label">${market.probabilityLabel}</div>
+        </div>
+        
+        ${market.description ? `
+          <details class="market-card__intelligence">
+            <summary class="market-card__intelligence-summary">
+              <span>Market Details</span>
+              <svg class="market-card__intelligence-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <div class="market-card__intelligence-content">
+              <p class="text-body-sm text-secondary" style="line-height: 1.6;">
+                ${market.description}
+              </p>
+            </div>
+          </details>
+        ` : ''}
+        
+        <footer class="market-card__footer">
+          <div class="market-card__metadata">
+            <span class="market-card__metadata-item">
+              <span class="market-card__metadata-icon">💰</span>
+              <span>${market.volume}</span>
+            </span>
+            <span class="market-card__metadata-item">
+              <span class="market-card__metadata-icon">👥</span>
+              <span>${market.traders.toLocaleString()} traders</span>
+            </span>
+          </div>
+          <button class="btn btn-primary market-card__cta">
+            Predict
+          </button>
+        </footer>
+      `;
+      
+      return article;
+    }
+
+    // Filter functionality
+    document.getElementById('filters').addEventListener('click', (e) => {
+      const btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+      
+      // Update active state
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        b.classList.remove('filter-btn--active');
+      });
+      btn.classList.add('filter-btn--active');
+      
+      // Filter markets
+      const sport = btn.dataset.sport;
+      currentFilter = sport;
+      
+      if (sport === 'all') {
+        renderMarkets(allMarkets);
+      } else {
+        const filtered = allMarkets.filter(market => 
+          market.sport === sport
+        );
+        renderMarkets(filtered);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polymarket Sports - Forecast & Trade</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0e14;
+            color: #e7e9ea;
+            overflow-x: hidden;
+        }
+        
+        /* Header - Mobile Optimized */
+        .header {
+            background: linear-gradient(135deg, #1a1f29, #0f1419);
+            padding: 12px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid #238636;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            color: #3fb950;
+        }
+        
+        .balance-chip {
+            background: rgba(63, 185, 80, 0.15);
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #238636;
+        }
+        
+        .balance-icon {
+            font-size: 16px;
+        }
+        
+        .balance-amount {
+            font-size: 14px;
+            font-weight: 700;
+            color: #3fb950;
+        }
+        
+        .header-nav {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .header-nav::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .nav-tab {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid #2d333b;
+            border-radius: 20px;
+            color: #8b949e;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        
+        .nav-tab.active {
+            background: #238636;
+            border-color: #238636;
+            color: white;
+        }
+        
+        .nav-tab.live {
+            border-color: #da3633;
+            color: #da3633;
+        }
+        
+        .nav-tab.live.active {
+            background: #da3633;
+            color: white;
+        }
+        
+        /* Value Prop Banner - Mobile */
+        .value-banner {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            padding: 16px;
+            margin: 0;
+        }
+        
+        .value-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .value-headline {
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .value-icon {
+            font-size: 20px;
+        }
+        
+        .value-points {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            font-size: 12px;
+            color: #e0e7ff;
+        }
+        
+        .value-point {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .check-icon {
+            color: #3fb950;
+            font-weight: 800;
+        }
+        
+        /* Quick Stats Bar */
+        .stats-bar {
+            background: #1a1f29;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-around;
+            border-bottom: 1px solid #2d333b;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 18px;
+            font-weight: 800;
+            color: #3fb950;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 10px;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Match Card - Mobile Optimized */
+        .match-card {
+            background: #1a1f29;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            border: 1px solid #2d333b;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .match-header {
+            background: #0f1419;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #2d333b;
+        }
+        
+        .league-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .league-badge {
+            font-size: 16px;
+        }
+        
+        .league-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #8b949e;
+        }
+        
+        .match-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: #da3633;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        .time-badge {
+            font-size: 12px;
+            color: #8b949e;
+            font-weight: 600;
+        }
+        
+        /* Teams Section */
+        .teams-section {
+            padding: 16px;
+        }
+        
+        .match-question {
+            font-size: 15px;
+            font-weight: 600;
+            color: #e7e9ea;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        
+        .teams-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: #0d1117;
+            border-radius: 8px;
+        }
+        
+        .team {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .team-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #e7e9ea;
+            margin-bottom: 4px;
+        }
+        
+        .team-form {
+            font-size: 11px;
+            color: #8b949e;
+        }
+        
+        .vs-divider {
+            font-size: 14px;
+            color: #8b949e;
+            font-weight: 600;
+            padding: 0 16px;
+        }
+        
+        /* Market Intelligence - Compact */
+        .market-intel {
+            background: #0d1117;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .intel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .intel-title {
+            font-size: 12px;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        
+        .expand-btn {
+            font-size: 11px;
+            color: #3fb950;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .intel-list {
+            display: grid;
+            gap: 6px;
+        }
+        
+        .intel-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 12px;
+            color: #8b949e;
+        }
+        
+        .intel-icon {
+            color: #3fb950;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        /* Outcome Options - Mobile First */
+        .outcomes-container {
+            padding: 0 16px 16px;
+        }
+        
+        .outcomes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .outcomes-title {
+            font-size: 13px;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        
+        .market-volume {
+            font-size: 11px;
+            color: #3fb950;
+            font-weight: 600;
+        }
+        
+        .outcome-grid {
+            display: grid;
+            gap: 10px;
+        }
+        
+        .outcome-option {
+            background: linear-gradient(135deg, #238636, #2ea043);
+            border: none;
+            border-radius: 10px;
+            padding: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(35, 134, 54, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 70px;
+        }
+        
+        .outcome-option:active {
+            transform: scale(0.98);
+        }
+        
+        .outcome-left {
+            flex: 1;
+        }
+        
+        .outcome-label {
+            font-size: 15px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 4px;
+        }
+        
+        .outcome-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .outcome-right {
+            text-align: right;
+        }
+        
+        .probability-big {
+            font-size: 28px;
+            font-weight: 800;
+            color: white;
+            line-height: 1;
+            margin-bottom: 2px;
+        }
+        
+        .price-display {
+            font-size: 12px;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        /* Bottom Sheet - Mobile Native */
+        .bottom-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #1a1f29;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
+            transform: translateY(100%);
+            transition: transform 0.3s ease-out;
+            z-index: 200;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        
+        .bottom-sheet.open {
+            transform: translateY(0);
+        }
+        
+        .sheet-handle {
+            width: 40px;
+            height: 4px;
+            background: #8b949e;
+            border-radius: 2px;
+            margin: 12px auto;
+        }
+        
+        .sheet-content {
+            padding: 0 20px 24px;
+        }
+        
+        .sheet-header {
+            padding: 12px 0;
+            border-bottom: 1px solid #2d333b;
+            margin-bottom: 20px;
+        }
+        
+        .sheet-title {
+            font-size: 12px;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .sheet-selection {
+            font-size: 18px;
+            font-weight: 700;
+            color: #e7e9ea;
+        }
+        
+        .sheet-subtitle {
+            font-size: 13px;
+            color: #8b949e;
+            margin-top: 4px;
+        }
+        
+        /* Probability Card in Sheet */
+        .prob-card {
+            background: linear-gradient(135deg, #238636, #2ea043);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .prob-card-label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .prob-card-value {
+            font-size: 48px;
+            font-weight: 800;
+            color: white;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        
+        .prob-card-desc {
+            font-size: 13px;
+            color: rgba(255,255,255,0.9);
+        }
+        
+        .prob-card-desc strong {
+            font-weight: 700;
+        }
+        
+        /* Amount Selection */
+        .amount-section {
+            margin-bottom: 24px;
+        }
+        
+        .section-header {
+            font-size: 14px;
+            font-weight: 600;
+            color: #e7e9ea;
+            margin-bottom: 12px;
+        }
+        
+        .presets-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .preset-chip {
+            padding: 12px 8px;
+            background: #0d1117;
+            border: 2px solid #2d333b;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #e7e9ea;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .preset-chip:active {
+            transform: scale(0.95);
+        }
+        
+        .preset-chip.selected {
+            background: rgba(63, 185, 80, 0.15);
+            border-color: #238636;
+            color: #3fb950;
+        }
+        
+        .custom-input-wrapper {
+            display: flex;
+            align-items: center;
+            background: #0d1117;
+            border: 2px solid #2d333b;
+            border-radius: 10px;
+            padding: 4px 4px 4px 16px;
+            transition: border-color 0.2s;
+        }
+        
+        .custom-input-wrapper:focus-within {
+            border-color: #238636;
+        }
+        
+        .currency-symbol {
+            font-size: 18px;
+            font-weight: 800;
+            color: #8b949e;
+            margin-right: 8px;
+        }
+        
+        .amount-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #e7e9ea;
+            font-size: 18px;
+            font-weight: 700;
+            padding: 12px 8px;
+            outline: none;
+        }
+        
+        /* Calculation Breakdown */
+        .calc-section {
+            background: #0d1117;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .calc-title {
+            font-size: 12px;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        
+        .calc-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .calc-row:last-child {
+            margin-bottom: 0;
+            padding-top: 12px;
+            border-top: 1px solid #2d333b;
+        }
+        
+        .calc-label {
+            color: #8b949e;
+        }
+        
+        .calc-value {
+            font-weight: 700;
+            color: #e7e9ea;
+        }
+        
+        .calc-value.highlight {
+            color: #3fb950;
+            font-size: 20px;
+        }
+        
+        /* Action Button - Mobile */
+        .action-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #238636, #2ea043);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(35, 134, 54, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+        
+        .action-btn:active {
+            transform: scale(0.98);
+        }
+        
+        /* Info Footer */
+        .sheet-footer {
+            text-align: center;
+            font-size: 12px;
+            color: #8b949e;
+            padding-top: 16px;
+            border-top: 1px solid #2d333b;
+        }
+        
+        .footer-highlight {
+            color: #3fb950;
+            font-weight: 600;
+        }
+        
+        /* Backdrop */
+        .backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 150;
+            display: none;
+        }
+        
+        .backdrop.active {
+            display: block;
+        }
+        
+        /* Quick CTA Fab */
+        .quick-cta {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #238636, #2ea043);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(35, 134, 54, 0.5);
+            cursor: pointer;
+            z-index: 90;
+            font-size: 24px;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .quick-cta:active {
+            transform: scale(0.95);
+        }
+        
+        /* Loading State */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 14, 20, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 300;
+        }
+        
+        .loading-overlay.active {
+            display: flex;
+        }
+        
+        .loading-content {
+            text-align: center;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #2d333b;
+            border-top-color: #3fb950;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 14px;
+            color: #8b949e;
+        }
+        
+        /* Success State */
+        .success-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: #1a1f29;
+            border-radius: 16px;
+            padding: 32px;
+            z-index: 350;
+            text-align: center;
+            max-width: 320px;
+            border: 2px solid #238636;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            transition: transform 0.3s;
+        }
+        
+        .success-modal.active {
+            transform: translate(-50%, -50%) scale(1);
+        }
+        
+        .success-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+        
+        .success-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #3fb950;
+            margin-bottom: 8px;
+        }
+        
+        .success-message {
+            font-size: 14px;
+            color: #8b949e;
+            margin-bottom: 20px;
+        }
+        
+        .success-btn {
+            padding: 12px 24px;
+            background: #238636;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        /* Responsive Tablet */
+        @media (min-width: 768px) {
+            .main-content {
+                max-width: 700px;
+            }
+            
+            .presets-grid {
+                grid-template-columns: repeat(6, 1fr);
+            }
+        }
+        
+        /* Hide on larger screens message */
+        .desktop-message {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #1a1f29;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 400px;
+            border: 2px solid #238636;
+        }
+        
+        @media (min-width: 1024px) {
+            body {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+            }
+            
+            .desktop-message {
+                display: block;
+            }
+            
+            .header, .value-banner, .stats-bar, .main-content, .quick-cta {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Experience -->
+    <div class="header">
+        <div class="header-top">
+            <div class="logo">⚡ Polymarket</div>
+            <div class="balance-chip">
+                <span class="balance-icon">💎</span>
+                <span class="balance-amount">$125.50</span>
+            </div>
+        </div>
+        <div class="header-nav">
+            <button class="nav-tab live active">🔴 Live Now</button>
+            <button class="nav-tab">⚽ Football</button>
+            <button class="nav-tab">🏀 Basketball</button>
+            <button class="nav-tab">🏈 NFL</button>
+            <button class="nav-tab">⚾ MLB</button>
+            <button class="nav-tab">🎾 Tennis</button>
+        </div>
+    </div>
+    
+    <!-- Value Proposition Banner -->
+    <div class="value-banner">
+        <div class="value-content">
+            <div class="value-headline">
+                <span class="value-icon">📊</span>
+                <span>Forecast Sports. Trade on USDC.</span>
+            </div>
+            <div class="value-points">
+                <div class="value-point">
+                    <span class="check-icon">✓</span>
+                    <span>2% fees vs 20%+</span>
+                </div>
+                <div class="value-point">
+                    <span class="check-icon">✓</span>
+                    <span>Research-based</span>
+                </div>
+                <div class="value-point">
+                    <span class="check-icon">✓</span>
+                    <span>Instant settlement</span>
+                </div>
+                <div class="value-point">
+                    <span class="check-icon">✓</span>
+                    <span>Your USDC, your control</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Stats -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <span class="stat-value">$4.2M</span>
+            <span class="stat-label">Today's Volume</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">12,450</span>
+            <span class="stat-label">Active Now</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">94%</span>
+            <span class="stat-label">Accuracy</span>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Match Card 1 -->
+        <div class="match-card">
+            <div class="match-header">
+                <div class="league-info">
+                    <span class="league-badge">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span>
+                    <span class="league-name">Premier League</span>
+                </div>
+                <div class="match-meta">
+                    <div class="live-indicator">
+                        <span class="live-dot"></span>
+                        <span>LIVE</span>
+                    </div>
+                    <div class="time-badge">80' H2</div>
+                </div>
+            </div>
+            
+            <div class="teams-section">
+                <div class="match-question">Will Arsenal win this match?</div>
+                
+                <div class="teams-display">
+                    <div class="team">
+                        <div class="team-name">Arsenal</div>
+                        <div class="team-form">W-W-W-D-W</div>
+                    </div>
+                    <div class="vs-divider">3 - 1</div>
+                    <div class="team">
+                        <div class="team-name">Sunderland</div>
+                        <div class="team-form">L-D-L-W-L</div>
+                    </div>
+                </div>
+                
+                <!-- Market Intelligence -->
+                <div class="market-intel">
+                    <div class="intel-header">
+                        <div class="intel-title">📊 Why This Probability?</div>
+                        <div class="expand-btn">View All</div>
+                    </div>
+                    <div class="intel-list">
+                        <div class="intel-item">
+                            <span class="intel-icon">✓</span>
+                            <span>Arsenal leading 3-1 with 10 mins left</span>
+                        </div>
+                        <div class="intel-item">
+                            <span class="intel-icon">✓</span>
+                            <span>95% win rate when leading by 2+ goals at 80'</span>
+                        </div>
+                        <div class="intel-item">
+                            <span class="intel-icon">✓</span>
+                            <span>2,450 forecasters predict YES</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Outcomes -->
+            <div class="outcomes-container">
+                <div class="outcomes-header">
+                    <div class="outcomes-title">Market Forecast</div>
+                    <div class="market-volume">💰 $2.4M Volume</div>
+                </div>
+                <div class="outcome-grid">
+                    <button class="outcome-option" onclick="openSheet('Arsenal Wins', 95, 0.95, 'Arsenal vs Sunderland')">
+                        <div class="outcome-left">
+                            <div class="outcome-label">YES - Arsenal Wins</div>
+                            <div class="outcome-meta">
+                                <span>2,450 forecasters</span>
+                                <span>•</span>
+                                <span>$0.95 price</span>
+                            </div>
+                        </div>
+                        <div class="outcome-right">
+                            <div class="probability-big">95%</div>
+                            <div class="price-display">1.05x return</div>
+                        </div>
+                    </button>
+                    
+                    <button class="outcome-option" style="background: linear-gradient(135deg, #8b949e, #6e7681);" onclick="openSheet('Arsenal Loses', 5, 0.05, 'Arsenal vs Sunderland')">
+                        <div class="outcome-left">
+                            <div class="outcome-label">NO - Arsenal Loses</div>
+                            <div class="outcome-meta">
+                                <span>125 forecasters</span>
+                                <span>•</span>
+                                <span>$0.05 price</span>
+                            </div>
+                        </div>
+                        <div class="outcome-right">
+                            <div class="probability-big">5%</div>
+                            <div class="price-display">20.0x return</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Match Card 2 -->
+        <div class="match-card">
+            <div class="match-header">
+                <div class="league-info">
+                    <span class="league-badge">🇳🇬</span>
+                    <span class="league-name">Nigeria Premier</span>
+                </div>
+                <div class="match-meta">
+                    <div class="time-badge">Today 6:00 PM</div>
+                </div>
+            </div>
+            
+            <div class="teams-section">
+                <div class="match-question">Will Enyimba FC win?</div>
+                
+                <div class="teams-display">
+                    <div class="team">
+                        <div class="team-name">Enyimba FC</div>
+                        <div class="team-form">W-D-W-W-D</div>
+                    </div>
+                    <div class="vs-divider">vs</div>
+                    <div class="team">
+                        <div class="team-name">Kano Pillars</div>
+                        <div class="team-form">D-L-W-L-D</div>
+                    </div>
+                </div>
+                
+                <!-- Market Intelligence -->
+                <div class="market-intel">
+                    <div class="intel-header">
+                        <div class="intel-title">📊 Why This Probability?</div>
+                        <div class="expand-btn">View All</div>
+                    </div>
+                    <div class="intel-list">
+                        <div class="intel-item">
+                            <span class="intel-icon">✓</span>
+                            <span>Enyimba unbeaten at home (8 games)</span>
+                        </div>
+                        <div class="intel-item">
+                            <span class="intel-icon">✓</span>
+                            <span>Kano Pillars 1 win in last 5 away</span>
+                        </div>
+                        <div class="intel-item">
+                            <span class="intel-icon">✓</span>
+                            <span>H2H: Enyimba won 3 of last 4</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Outcomes -->
+            <div class="outcomes-container">
+                <div class="outcomes-header">
+                    <div class="outcomes-title">Market Forecast</div>
+                    <div class="market-volume">💰 $850K Volume</div>
+                </div>
+                <div class="outcome-grid">
+                    <button class="outcome-option" onclick="openSheet('Enyimba Wins', 67, 0.67, 'Enyimba vs Kano Pillars')">
+                        <div class="outcome-left">
+                            <div class="outcome-label">YES - Enyimba Wins</div>
+                            <div class="outcome-meta">
+                                <span>1,240 forecasters</span>
+                                <span>•</span>
+                                <span>$0.67 price</span>
+                            </div>
+                        </div>
+                        <div class="outcome-right">
+                            <div class="probability-big">67%</div>
+                            <div class="price-display">1.49x return</div>
+                        </div>
+                    </button>
+                    
+                    <button class="outcome-option" style="background: linear-gradient(135deg, #8b949e, #6e7681);" onclick="openSheet('Enyimba Loses', 33, 0.33, 'Enyimba vs Kano Pillars')">
+                        <div class="outcome-left">
+                            <div class="outcome-label">NO - Enyimba Loses</div>
+                            <div class="outcome-meta">
+                                <span>610 forecasters</span>
+                                <span>•</span>
+                                <span>$0.33 price</span>
+                            </div>
+                        </div>
+                        <div class="outcome-right">
+                            <div class="probability-big">33%</div>
+                            <div class="price-display">3.03x return</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- More matches would continue... -->
+        <div style="height: 100px;"></div>
+    </div>
+    
+    <!-- Quick CTA Fab -->
+    <div class="quick-cta" onclick="alert('Quick deposit: Get USDC in 30 seconds and start forecasting!')">
+        ⚡
+    </div>
+    
+    <!-- Backdrop -->
+    <div class="backdrop" id="backdrop" onclick="closeSheet()"></div>
+    
+    <!-- Bottom Sheet -->
+    <div class="bottom-sheet" id="bottomSheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-content">
+            <div class="sheet-header">
+                <div class="sheet-title">Your Forecast</div>
+                <div class="sheet-selection" id="sheetMatch">Arsenal vs Sunderland</div>
+                <div class="sheet-subtitle" id="sheetOutcome">Arsenal Wins</div>
+            </div>
+            
+            <!-- Probability Card -->
+            <div class="prob-card">
+                <div class="prob-card-label">Market Consensus</div>
+                <div class="prob-card-value" id="probValue">95%</div>
+                <div class="prob-card-desc">
+                    <strong id="forecasterCount">2,450</strong> forecasters predict this outcome
+                </div>
+            </div>
+            
+            <!-- Amount Selection -->
+            <div class="amount-section">
+                <div class="section-header">How much USDC to spend?</div>
+                <div class="presets-grid">
+                    <button class="preset-chip" onclick="selectAmount(5)">$5</button>
+                    <button class="preset-chip selected" onclick="selectAmount(10)">$10</button>
+                    <button class="preset-chip" onclick="selectAmount(25)">$25</button>
+                    <button class="preset-chip" onclick="selectAmount(50)">$50</button>
+                </div>
+                <div class="custom-input-wrapper">
+                    <span class="currency-symbol">$</span>
+                    <input type="number" class="amount-input" id="amountInput" value="10" min="1" step="0.01" oninput="updateCalc()">
+                </div>
+            </div>
+            
+            <!-- Calculation -->
+            <div class="calc-section">
+                <div class="calc-title">Your Position</div>
+                <div class="calc-row">
+                    <span class="calc-label">You spend</span>
+                    <span class="calc-value" id="spendVal">$10.00 USDC</span>
+                </div>
+                <div class="calc-row">
+                    <span class="calc-label">Shares you buy</span>
+                    <span class="calc-value" id="sharesVal">10.53</span>
+                </div>
+                <div class="calc-row">
+                    <span class="calc-label">If correct</span>
+                    <span class="calc-value" id="profitVal">+$0.53</span>
+                </div>
+                <div class="calc-row">
+                    <span class="calc-label">Total payout</span>
+                    <span class="calc-value highlight" id="payoutVal">$10.53 USDC</span>
+                </div>
+            </div>
+            
+            <!-- Action Button -->
+            <button class="action-btn" onclick="submitForecast()">
+                Make Forecast
+            </button>
+            
+            <!-- Footer -->
+            <div class="sheet-footer">
+                💎 <span class="footer-highlight">USDC in your control</span> • Transparent • Withdraw anytime
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <div class="loading-text">Processing on-chain...</div>
+        </div>
+    </div>
+    
+    <!-- Success Modal -->
+    <div class="success-modal" id="successModal">
+        <div class="success-icon">✅</div>
+        <div class="success-title">Forecast Placed!</div>
+        <div class="success-message">Your position is active. Watch the market and good luck!</div>
+        <button class="success-btn" onclick="closeSuccess()">View Portfolio</button>
+    </div>
+    
+    <!-- Desktop Message -->
+    <div class="desktop-message">
+        <h2 style="color: #3fb950; margin-bottom: 16px;">📱 Mobile Experience</h2>
+        <p style="color: #8b949e; line-height: 1.6;">
+            This is optimized for mobile devices. Please resize your browser window or open on your phone to see the full experience.
+        </p>
+    </div>
+    
+    <script>
+        let currentPrice = 0.95;
+        let currentProb = 95;
+        
+        function openSheet(outcome, prob, price, match) {
+            currentPrice = price;
+            currentProb = prob;
+            
+            document.getElementById('sheetMatch').textContent = match;
+            document.getElementById('sheetOutcome').textContent = outcome;
+            document.getElementById('probValue').textContent = prob + '%';
+            document.getElementById('forecasterCount').textContent = prob > 50 ? '2,450' : '890';
+            
+            updateCalc();
+            
+            document.getElementById('backdrop').classList.add('active');
+            document.getElementById('bottomSheet').classList.add('open');
+        }
+        
+        function closeSheet() {
+            document.getElementById('backdrop').classList.remove('active');
+            document.getElementById('bottomSheet').classList.remove('open');
+        }
+        
+        function selectAmount(amount) {
+            // Remove selected from all
+            document.querySelectorAll('.preset-chip').forEach(chip => {
+                chip.classList.remove('selected');
+            });
+            
+            // Add to clicked
+            event.target.classList.add('selected');
+            
+            // Update input
+            document.getElementById('amountInput').value = amount;
+            
+            updateCalc();
+        }
+        
+        function updateCalc() {
+            const amount = parseFloat(document.getElementById('amountInput').value) || 0;
+            const shares = amount / currentPrice;
+            const payout = shares * 1.00;
+            const profit = payout - amount;
+            
+            document.getElementById('spendVal').textContent = '$' + amount.toFixed(2) + ' USDC';
+            document.getElementById('sharesVal').textContent = shares.toFixed(2);
+            document.getElementById('profitVal').textContent = (profit >= 0 ? '+' : '') + '$' + profit.toFixed(2);
+            document.getElementById('payoutVal').textContent = '$' + payout.toFixed(2) + ' USDC';
+        }
+        
+        function submitForecast() {
+            // Close sheet
+            closeSheet();
+            
+            // Show loading
+            document.getElementById('loadingOverlay').classList.add('active');
+            
+            // Simulate blockchain transaction
+            setTimeout(() => {
+                document.getElementById('loadingOverlay').classList.remove('active');
+                document.getElementById('backdrop').classList.add('active');
+                document.getElementById('successModal').classList.add('active');
+            }, 2000);
+        }
+        
+        function closeSuccess() {
+            document.getElementById('backdrop').classList.remove('active');
+            document.getElementById('successModal').classList.remove('active');
+        }
+        
+        // Initialize
+        updateCalc();
+        
+        // Prevent zoom on input focus (iOS)
+        document.addEventListener('touchstart', function(e) {
+            if (e.touches.length > 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+    </script>
+</body>
+</html>

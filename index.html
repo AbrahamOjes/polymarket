@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Research-backed prediction market interface - simplified for non-traders">
+  <title>Polymarket - Simplified Interface</title>
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="src/styles/reset.css">
+  <link rel="stylesheet" href="src/styles/tokens.css">
+  <link rel="stylesheet" href="src/components/atoms/Button.css">
+  <link rel="stylesheet" href="src/components/atoms/Typography.css">
+  <link rel="stylesheet" href="src/components/molecules/MarketCard.css">
+  
+  <style>
+    /* Page Layout */
+    .container {
+      max-width: var(--container-xl);
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+    
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-lg) 0;
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: var(--space-2xl);
+    }
+    
+    .header__logo {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+    }
+    
+    .header__balance {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-sm) var(--space-md);
+      background: var(--color-surface);
+      border-radius: var(--radius-md);
+      font-family: var(--font-family-mono);
+      font-variant-numeric: tabular-nums;
+    }
+    
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      margin-bottom: var(--space-3xl);
+    }
+    
+    .hero__title {
+      margin-bottom: var(--space-md);
+    }
+    
+    .hero__subtitle {
+      max-width: 600px;
+      margin: 0 auto var(--space-xl);
+    }
+    
+    .hero__mode-toggle {
+      display: inline-flex;
+      gap: var(--space-sm);
+      padding: var(--space-xs);
+      background: var(--color-surface);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+    }
+    
+    .hero__mode-btn {
+      padding: var(--space-sm) var(--space-lg);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-secondary);
+      background: transparent;
+      transition: all var(--duration-fast);
+    }
+    
+    .hero__mode-btn--active {
+      background: var(--color-info);
+      color: white;
+    }
+    
+    /* Market Grid */
+    .market-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: var(--space-lg);
+      margin-bottom: var(--space-3xl);
+    }
+    
+    /* Educational Banner */
+    .edu-banner {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-2xl);
+    }
+    
+    .edu-banner__title {
+      margin-bottom: var(--space-sm);
+      color: var(--color-info);
+    }
+    
+    .edu-banner__text {
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-md);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .market-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .header {
+        flex-direction: column;
+        gap: var(--space-md);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header container">
+    <div class="header__logo">Polymarket</div>
+    <div class="header__balance">
+      <span class="text-body-sm">Balance:</span>
+      <span class="text-body text-success">$250.00 USDC</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Hero Section -->
+    <section class="hero">
+      <h1 class="hero__title text-h1">Forecast the Future</h1>
+      <p class="hero__subtitle text-body text-secondary">
+        Make predictions on real-world events. Learn from market intelligence and join thousands of forecasters.
+      </p>
+      
+      <!-- Mode Toggle (UX: Default to Simple Mode) -->
+      <div class="hero__mode-toggle" role="tablist">
+        <button class="hero__mode-btn hero__mode-btn--active" role="tab" aria-selected="true">
+          Simple Mode
+        </button>
+        <button class="hero__mode-btn" role="tab" aria-selected="false">
+          Advanced Mode
+        </button>
+      </div>
+    </section>
+
+    <!-- Educational Banner (UX: Information Markets Positioning) -->
+    <aside class="edu-banner" role="complementary">
+      <h2 class="edu-banner__title text-h4">💡 How It Works</h2>
+      <p class="edu-banner__text text-body-sm">
+        Prediction markets aggregate knowledge from thousands of people. When you make a prediction, 
+        you're contributing to a collective forecast that's often more accurate than individual experts.
+      </p>
+      <button class="btn btn-ghost btn-sm">Learn More →</button>
+    </aside>
+
+    <!-- Featured Markets (UX: Choice Architecture - 3-5 markets) -->
+    <section>
+      <h2 class="text-h2" style="margin-bottom: var(--space-lg);">Featured Markets</h2>
+      
+      <div class="market-grid">
+        <!-- Market Card 1: Sports -->
+        <article class="market-card" role="article" tabindex="0">
+          <header class="market-card__header">
+            <span class="market-card__category">
+              <span class="market-card__category-icon">⚽</span>
+              <span>SPORTS</span>
+            </span>
+            <span class="market-card__status market-card__status--live">LIVE</span>
+          </header>
+          
+          <h3 class="market-card__question">
+            Will Arsenal win vs Chelsea this weekend?
+          </h3>
+          
+          <div class="market-card__probability">
+            <div class="market-card__probability-value market-card__probability-value--high">
+              71%
+            </div>
+            <div class="market-card__probability-label">likely YES</div>
+          </div>
+          
+          <!-- Progressive Disclosure -->
+          <details class="market-card__intelligence">
+            <summary class="market-card__intelligence-summary">
+              <span>Why 71%?</span>
+              <svg class="market-card__intelligence-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <div class="market-card__intelligence-content">
+              <ul class="market-card__intelligence-list">
+                <li class="market-card__intelligence-item">
+                  <svg class="market-card__intelligence-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>Arsenal ranked 2nd in league standings</span>
+                </li>
+                <li class="market-card__intelligence-item">
+                  <svg class="market-card__intelligence-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>Strong away record this season (8-2-1)</span>
+                </li>
+                <li class="market-card__intelligence-item">
+                  <svg class="market-card__intelligence-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>Chelsea missing 3 key players due to injury</span>
+                </li>
+              </ul>
+            </div>
+          </details>
+          
+          <!-- Social Proof -->
+          <footer class="market-card__footer">
+            <div class="market-card__metadata">
+              <span class="market-card__metadata-item">
+                <span class="market-card__metadata-icon">💰</span>
+                <span>$2.4M</span>
+              </span>
+              <span class="market-card__metadata-item">
+                <span class="market-card__metadata-icon">👥</span>
+                <span>3,340 traders</span>
+              </span>
+            </div>
+            <button class="btn btn-primary market-card__cta">
+              Predict
+            </button>
+          </footer>
+        </article>
+
+        <!-- Market Card 2: Politics -->
+        <article class="market-card" role="article" tabindex="0">
+          <header class="market-card__header">
+            <span class="market-card__category">
+              <span class="market-card__category-icon">🏛️</span>
+              <span>POLITICS</span>
+            </span>
+            <span class="market-card__status market-card__status--live">LIVE</span>
+          </header>
+          
+          <h3 class="market-card__question">
+            Will unemployment rate drop below 4% by year end?
+          </h3>
+          
+          <div class="market-card__probability">
+            <div class="market-card__probability-value market-card__probability-value--medium">
+              52%
+            </div>
+            <div class="market-card__probability-label">uncertain</div>
+          </div>
+          
+          <details class="market-card__intelligence">
+            <summary class="market-card__intelligence-summary">
+              <span>Why 52%?</span>
+              <svg class="market-card__intelligence-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <div class="market-card__intelligence-content">
+              <ul class="market-card__intelligence-list">
+                <li class="market-card__intelligence-item">
+                  <svg class="market-card__intelligence-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>Current rate at 4.1%, trending downward</span>
+                </li>
+                <li class="market-card__intelligence-item">
+                  <svg class="market-card__intelligence-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>Strong job growth in tech and healthcare sectors</span>
+                </li>
+                <li class="market-card__intelligence-item">
+                  <svg class="market-card__intelligence-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>Economic uncertainty may slow hiring</span>
+                </li>
+              </ul>
+            </div>
+          </details>
+          
+          <footer class="market-card__footer">
+            <div class="market-card__metadata">
+              <span class="market-card__metadata-item">
+                <span class="market-card__metadata-icon">💰</span>
+                <span>$1.8M</span>
+              </span>
+              <span class="market-card__metadata-item">
+                <span class="market-card__metadata-icon">👥</span>
+                <span>2,156 traders</span>
+              </span>
+            </div>
+            <button class="btn btn-primary market-card__cta">
+              Predict
+            </button>
+          </footer>
+        </article>
+
+        <!-- Market Card 3: Technology -->
+        <article class="market-card market-card--featured" role="article" tabindex="0">
+          <header class="market-card__header">
+            <span class="market-card__category">
+              <span class="market-card__category-icon">💻</span>
+              <span>TECH</span>
+            </span>
+            <span class="market-card__status market-card__status--live">LIVE</span>
+          </header>
+          
+          <h3 class="market-card__question">
+            Will Apple announce new AI features at next event?
+          </h3>
+          
+          <div class="market-card__probability">
+            <div class="market-card__probability-value market-card__probability-value--high">
+              84%
+            </div>
+            <div class="market-card__probability-label">very likely YES</div>
+          </div>
+          
+          <details class="market-card__intelligence">
+            <summary class="market-card__intelligence-summary">
+              <span>Why 84%?</span>
+              <svg class="market-card__intelligence-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <div class="market-card__intelligence-content">
+              <ul class="market-card__intelligence-list">
+                <li class="market-card__intelligence-item">
+                  <svg class="market-card__intelligence-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>Multiple leaks from reliable sources confirm AI focus</span>
+                </li>
+                <li class="market-card__intelligence-item">
+                  <svg class="market-card__intelligence-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>Apple has been hiring AI researchers aggressively</span>
+                </li>
+                <li class="market-card__intelligence-item">
+                  <svg class="market-card__intelligence-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>Competitors already launched similar features</span>
+                </li>
+              </ul>
+            </div>
+          </details>
+          
+          <footer class="market-card__footer">
+            <div class="market-card__metadata">
+              <span class="market-card__metadata-item">
+                <span class="market-card__metadata-icon">💰</span>
+                <span>$3.2M</span>
+              </span>
+              <span class="market-card__metadata-item">
+                <span class="market-card__metadata-icon">👥</span>
+                <span>4,892 traders</span>
+              </span>
+            </div>
+            <button class="btn btn-primary market-card__cta">
+              Predict
+            </button>
+          </footer>
+        </article>
+      </div>
+
+      <!-- View More (Choice Architecture - Progressive Disclosure) -->
+      <div style="text-align: center; margin-top: var(--space-xl);">
+        <button class="btn btn-secondary btn-lg">
+          View 42 More Markets →
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Mode toggle functionality
+    const modeButtons = document.querySelectorAll('.hero__mode-btn');
+    modeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        modeButtons.forEach(b => {
+          b.classList.remove('hero__mode-btn--active');
+          b.setAttribute('aria-selected', 'false');
+        });
+        btn.classList.add('hero__mode-btn--active');
+        btn.setAttribute('aria-selected', 'true');
+      });
+    });
+
+    // Card click handling
+    const cards = document.querySelectorAll('.market-card');
+    cards.forEach(card => {
+      card.addEventListener('click', (e) => {
+        // Don't trigger if clicking on details/summary or button
+        if (e.target.closest('details') || e.target.closest('button')) {
+          return;
+        }
+        console.log('Card clicked - would navigate to market detail');
+      });
+      
+      // Keyboard navigation
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          console.log('Card activated via keyboard');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polymarket Redesign - Simplified UX</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0f1419;
+            color: #e7e9ea;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 15px 0;
+        }
+        
+        .mode-toggle {
+            background: #1a1f29;
+            border-radius: 20px;
+            padding: 4px;
+            display: flex;
+            gap: 4px;
+        }
+        
+        .mode-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 16px;
+            background: transparent;
+            color: #8b949e;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .mode-btn.active {
+            background: #238636;
+            color: white;
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+        }
+        
+        .match-card {
+            background: #1a1f29;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .match-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .teams {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+        
+        .team-logo {
+            width: 32px;
+            height: 32px;
+            background: #2d333b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        .match-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .match-time {
+            color: #8b949e;
+            font-size: 14px;
+        }
+        
+        .outcome-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .outcome-card {
+            background: #0d1117;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        
+        .outcome-card:hover {
+            border-color: #238636;
+            transform: translateY(-2px);
+        }
+        
+        .outcome-card.selected {
+            border-color: #238636;
+            background: #0d1d0f;
+        }
+        
+        .outcome-label {
+            font-size: 12px;
+            color: #8b949e;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .outcome-team {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .probability {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .probability.high {
+            color: #3fb950;
+        }
+        
+        .probability.medium {
+            color: #f0883e;
+        }
+        
+        .probability.low {
+            color: #8b949e;
+        }
+        
+        .probability-bar {
+            width: 100%;
+            height: 6px;
+            background: #2d333b;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        
+        .probability-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3fb950, #238636);
+            transition: width 0.3s;
+        }
+        
+        .context-info {
+            margin-top: 16px;
+            padding: 12px;
+            background: #0d1117;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #8b949e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .info-icon {
+            width: 16px;
+            height: 16px;
+            background: #238636;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        
+        .trade-panel {
+            background: #1a1f29;
+            border-radius: 12px;
+            padding: 24px;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .panel-header {
+            margin-bottom: 20px;
+        }
+        
+        .panel-title {
+            font-size: 14px;
+            color: #8b949e;
+            margin-bottom: 8px;
+        }
+        
+        .selected-outcome {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .outcome-badge {
+            padding: 4px 12px;
+            background: #238636;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        
+        .chance-display {
+            background: #0d1117;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .chance-label {
+            font-size: 12px;
+            color: #8b949e;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .chance-value {
+            font-size: 42px;
+            font-weight: 700;
+            color: #3fb950;
+            margin-bottom: 12px;
+        }
+        
+        .chance-bar-container {
+            width: 100%;
+            height: 8px;
+            background: #2d333b;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .chance-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #238636, #3fb950);
+            width: 71%;
+            transition: width 0.3s;
+        }
+        
+        .wager-section {
+            margin: 24px 0;
+        }
+        
+        .section-label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .amount-presets {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .preset-btn {
+            padding: 12px;
+            background: #0d1117;
+            border: 2px solid #2d333b;
+            border-radius: 8px;
+            color: #e7e9ea;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .preset-btn:hover {
+            border-color: #238636;
+        }
+        
+        .preset-btn.selected {
+            background: #0d1d0f;
+            border-color: #238636;
+        }
+        
+        .custom-amount {
+            display: flex;
+            align-items: center;
+            background: #0d1117;
+            border: 2px solid #2d333b;
+            border-radius: 8px;
+            padding: 4px 4px 4px 16px;
+            margin-top: 8px;
+        }
+        
+        .custom-amount input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #e7e9ea;
+            font-size: 16px;
+            padding: 8px;
+            outline: none;
+        }
+        
+        .custom-amount-label {
+            color: #8b949e;
+            font-size: 16px;
+            margin-right: 8px;
+        }
+        
+        .payout-display {
+            background: #0d1117;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .payout-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .payout-row:last-child {
+            margin-bottom: 0;
+            padding-top: 12px;
+            border-top: 1px solid #2d333b;
+        }
+        
+        .payout-label {
+            font-size: 14px;
+            color: #8b949e;
+        }
+        
+        .payout-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .payout-value.positive {
+            color: #3fb950;
+        }
+        
+        .payout-value.negative {
+            color: #f85149;
+        }
+        
+        .payout-value.large {
+            font-size: 24px;
+        }
+        
+        .action-button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #238636, #2ea043);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(35, 134, 54, 0.3);
+        }
+        
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(35, 134, 54, 0.4);
+        }
+        
+        .action-button:disabled {
+            background: #2d333b;
+            color: #8b949e;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .help-text {
+            margin-top: 12px;
+            font-size: 12px;
+            color: #8b949e;
+            text-align: center;
+        }
+        
+        .tooltip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            background: #2d333b;
+            border-radius: 50%;
+            font-size: 11px;
+            cursor: help;
+            margin-left: 4px;
+        }
+        
+        .advanced-toggle {
+            margin-top: 20px;
+            padding: 12px;
+            background: #0d1117;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 13px;
+            color: #8b949e;
+            transition: all 0.2s;
+        }
+        
+        .advanced-toggle:hover {
+            color: #e7e9ea;
+        }
+        
+        .onboarding-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        
+        .onboarding-card {
+            background: #1a1f29;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 500px;
+            text-align: center;
+        }
+        
+        .onboarding-card h2 {
+            font-size: 28px;
+            margin-bottom: 16px;
+        }
+        
+        .onboarding-card p {
+            color: #8b949e;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+        
+        .onboarding-example {
+            background: #0d1117;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 24px 0;
+            text-align: left;
+        }
+        
+        .example-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+        
+        .example-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .close-onboarding {
+            padding: 14px 32px;
+            background: #238636;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 1024px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            
+            .trade-panel {
+                position: relative;
+                top: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Polymarket</h1>
+            <div class="mode-toggle">
+                <button class="mode-btn active">Simple Mode</button>
+                <button class="mode-btn">Advanced</button>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="matches-section">
+                <div class="match-card">
+                    <div class="match-header">
+                        <div class="teams">
+                            <div class="team-logo">⚽</div>
+                            <div>
+                                <div class="match-title">SUN vs Arsenal</div>
+                                <div class="match-time">Premier League • Today 9:30 AM</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="outcome-cards">
+                        <div class="outcome-card">
+                            <div class="outcome-label">Home Win</div>
+                            <div class="outcome-team">Sunderland</div>
+                            <div class="probability medium">11%</div>
+                            <div class="probability-bar">
+                                <div class="probability-fill" style="width: 11%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="outcome-card">
+                            <div class="outcome-label">Draw</div>
+                            <div class="outcome-team">Tie Game</div>
+                            <div class="probability medium">18%</div>
+                            <div class="probability-bar">
+                                <div class="probability-fill" style="width: 18%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="outcome-card selected">
+                            <div class="outcome-label">Away Win</div>
+                            <div class="outcome-team">Arsenal</div>
+                            <div class="probability high">71%</div>
+                            <div class="probability-bar">
+                                <div class="probability-fill" style="width: 71%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="context-info">
+                        <div class="info-icon">ℹ</div>
+                        <div>Arsenal is heavily favored with a strong away record. Currently ranked 2nd in the league.</div>
+                    </div>
+                </div>
+                
+                <!-- Additional match cards would go here -->
+            </div>
+            
+            <div class="trade-panel">
+                <div class="panel-header">
+                    <div class="panel-title">Your Prediction</div>
+                    <div class="selected-outcome">
+                        <span>Arsenal to Win</span>
+                        <span class="outcome-badge">Away</span>
+                    </div>
+                </div>
+                
+                <div class="chance-display">
+                    <div class="chance-label">Market Confidence</div>
+                    <div class="chance-value">71%</div>
+                    <div class="chance-bar-container">
+                        <div class="chance-bar-fill"></div>
+                    </div>
+                </div>
+                
+                <div class="wager-section">
+                    <div class="section-label">
+                        How much do you want to wager?
+                        <span class="tooltip">?</span>
+                    </div>
+                    
+                    <div class="amount-presets">
+                        <button class="preset-btn">$10</button>
+                        <button class="preset-btn selected">$25</button>
+                        <button class="preset-btn">$50</button>
+                    </div>
+                    
+                    <div class="custom-amount">
+                        <span class="custom-amount-label">$</span>
+                        <input type="number" placeholder="Custom amount" value="25">
+                    </div>
+                </div>
+                
+                <div class="payout-display">
+                    <div class="payout-row">
+                        <span class="payout-label">Your wager</span>
+                        <span class="payout-value">$25.00</span>
+                    </div>
+                    <div class="payout-row">
+                        <span class="payout-label">If correct, you win</span>
+                        <span class="payout-value positive">+$10.21</span>
+                    </div>
+                    <div class="payout-row">
+                        <span class="payout-label">If incorrect, you lose</span>
+                        <span class="payout-value negative">-$25.00</span>
+                    </div>
+                    <div class="payout-row">
+                        <span class="payout-label">Total Payout (if correct)</span>
+                        <span class="payout-value positive large">$35.21</span>
+                    </div>
+                </div>
+                
+                <button class="action-button">
+                    Back Arsenal to Win
+                </button>
+                
+                <div class="help-text">
+                    You'll receive $35.21 if Arsenal wins
+                </div>
+                
+                <div class="advanced-toggle">
+                    ⚙️ Show Advanced Options
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Onboarding Overlay (can be shown on first visit) -->
+    <div class="onboarding-overlay" style="display: none;">
+        <div class="onboarding-card">
+            <h2>Welcome to Simple Mode! 👋</h2>
+            <p>We've simplified prediction markets so anyone can participate. Here's how it works:</p>
+            
+            <div class="onboarding-example">
+                <div class="example-row">
+                    <span style="color: #8b949e;">See a prediction</span>
+                    <span style="font-weight: 600;">Arsenal wins: 71%</span>
+                </div>
+                <div class="example-row">
+                    <span style="color: #8b949e;">Choose your wager</span>
+                    <span style="font-weight: 600;">$25</span>
+                </div>
+                <div class="example-row">
+                    <span style="color: #8b949e;">If you're right</span>
+                    <span style="color: #3fb950; font-weight: 600;">Win $10.21</span>
+                </div>
+                <div class="example-row">
+                    <span style="color: #8b949e;">If you're wrong</span>
+                    <span style="color: #f85149; font-weight: 600;">Lose $25</span>
+                </div>
+            </div>
+            
+            <p style="font-size: 13px; margin-top: 20px;">
+                The percentage shows what the market thinks will happen. Higher % = more likely, but smaller returns.
+            </p>
+            
+            <button class="close-onboarding" onclick="document.querySelector('.onboarding-overlay').style.display='none'">
+                Got it, let's start!
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // Simple interactivity for demo purposes
+        document.querySelectorAll('.outcome-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.outcome-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+        
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+        
+        // Show onboarding on page load (for demo)
+        setTimeout(() => {
+            document.querySelector('.onboarding-overlay').style.display = 'flex';
+        }, 500);
+    </script>
+</body>
+</html>

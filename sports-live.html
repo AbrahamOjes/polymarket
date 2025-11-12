@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Live sports prediction markets from Polymarket">
+  <title>Sports Markets - Polymarket (Live Data)</title>
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="src/styles/reset.css">
+  <link rel="stylesheet" href="src/styles/tokens.css">
+  <link rel="stylesheet" href="src/components/atoms/Button.css">
+  <link rel="stylesheet" href="src/components/atoms/Typography.css">
+  <link rel="stylesheet" href="src/components/molecules/MarketCard.css">
+  
+  <style>
+    .container {
+      max-width: var(--container-xl);
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-lg) 0;
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: var(--space-2xl);
+    }
+    
+    .header__logo {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+    }
+    
+    .header__balance {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-sm) var(--space-md);
+      background: var(--color-surface);
+      border-radius: var(--radius-md);
+      font-family: var(--font-family-mono);
+      font-variant-numeric: tabular-nums;
+    }
+    
+    .page-header {
+      margin-bottom: var(--space-2xl);
+    }
+    
+    .page-header__title {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-sm);
+    }
+    
+    .page-header__icon {
+      font-size: var(--font-size-3xl);
+    }
+    
+    .page-header__meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-top: var(--space-sm);
+    }
+    
+    .live-indicator {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      padding: var(--space-xs) var(--space-sm);
+      background: rgba(239, 68, 68, 0.1);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: #ef4444;
+    }
+    
+    .live-indicator__dot {
+      width: 8px;
+      height: 8px;
+      background: #ef4444;
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .loading {
+      text-align: center;
+      padding: var(--space-3xl);
+    }
+    
+    .loading__spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid var(--color-border);
+      border-top-color: var(--color-info);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto var(--space-md);
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .error {
+      background: rgba(248, 81, 73, 0.1);
+      border: 1px solid var(--color-error);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-2xl);
+      text-align: center;
+    }
+    
+    .error__title {
+      color: var(--color-error);
+      margin-bottom: var(--space-sm);
+    }
+    
+    .market-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: var(--space-lg);
+      margin-bottom: var(--space-3xl);
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: var(--space-3xl);
+    }
+    
+    .empty-state__icon {
+      font-size: 64px;
+      margin-bottom: var(--space-md);
+      opacity: 0.5;
+    }
+    
+    .filters {
+      display: flex;
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+      flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+      padding: var(--space-sm) var(--space-md);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-secondary);
+      transition: all var(--duration-fast);
+      cursor: pointer;
+    }
+    
+    .filter-btn:hover {
+      border-color: var(--color-info);
+      color: var(--color-text-primary);
+    }
+    
+    .filter-btn--active {
+      background: var(--color-info);
+      border-color: var(--color-info);
+      color: white;
+    }
+    
+    @media (max-width: 768px) {
+      .market-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header container">
+    <div class="header__logo">Polymarket</div>
+    <div class="header__balance">
+      <span class="text-body-sm">Balance:</span>
+      <span class="text-body text-success">$250.00 USDC</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-header__title">
+        <span class="page-header__icon">⚽</span>
+        <h1 class="text-h1">Sports Markets</h1>
+      </div>
+      <p class="text-body text-secondary">
+        Live prediction markets for sports events. Real-time odds from thousands of forecasters.
+      </p>
+      <div class="page-header__meta">
+        <div class="live-indicator">
+          <span class="live-indicator__dot"></span>
+          <span>LIVE DATA</span>
+        </div>
+        <span class="text-body-sm text-secondary" id="market-count">Loading markets...</span>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters" id="filters">
+      <button class="filter-btn filter-btn--active" data-sport="all">All Sports</button>
+      <button class="filter-btn" data-sport="football">🏈 Football</button>
+      <button class="filter-btn" data-sport="basketball">🏀 Basketball</button>
+      <button class="filter-btn" data-sport="soccer">⚽ Soccer</button>
+      <button class="filter-btn" data-sport="baseball">⚾ Baseball</button>
+      <button class="filter-btn" data-sport="mma">🥊 MMA/Boxing</button>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading" class="loading">
+      <div class="loading__spinner"></div>
+      <p class="text-body text-secondary">Loading live sports markets from Polymarket...</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="error" class="error" style="display: none;">
+      <h3 class="error__title text-h3">Unable to Load Markets</h3>
+      <p class="text-body text-secondary" id="error-message">
+        There was an error connecting to the API. Please try again.
+      </p>
+      <button class="btn btn-primary" onclick="loadMarkets()">Retry</button>
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty" class="empty-state" style="display: none;">
+      <div class="empty-state__icon">🔍</div>
+      <h3 class="text-h3">No Sports Markets Found</h3>
+      <p class="text-body text-secondary">
+        Try selecting a different sport or check back later.
+      </p>
+    </div>
+
+    <!-- Market Grid -->
+    <div id="market-grid" class="market-grid" style="display: none;">
+      <!-- Markets will be dynamically inserted here -->
+    </div>
+  </main>
+
+  <script>
+    // API configuration - uses backend proxy
+    const API_BASE = 'http://localhost:3000/api';
+    
+    let allMarkets = [];
+    let currentFilter = 'all';
+
+    // Load markets on page load
+    loadMarkets();
+
+    async function loadMarkets() {
+      showLoading();
+      
+      try {
+        // Fetch sports markets from backend proxy
+        const response = await fetch(`${API_BASE}/markets/sports?limit=50`);
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'API request failed');
+        }
+        
+        const markets = await response.json();
+        
+        // Transform market data
+        allMarkets = markets.map(transformMarketData);
+        
+        // Update market count
+        document.getElementById('market-count').textContent = 
+          `${allMarkets.length} live markets`;
+        
+        if (allMarkets.length === 0) {
+          showEmpty();
+        } else {
+          renderMarkets(allMarkets);
+        }
+      } catch (error) {
+        console.error('Error loading markets:', error);
+        showError(error.message);
+      }
+    }
+
+    function transformMarketData(market) {
+      // Get probability from lastTradePrice or average of bid/ask
+      let yesPrice = parseFloat(market.lastTradePrice || 0);
+      
+      // If no last trade, use midpoint of bid/ask
+      if (yesPrice === 0) {
+        const bid = parseFloat(market.bestBid || 0);
+        const ask = parseFloat(market.bestAsk || 1);
+        yesPrice = (bid + ask) / 2;
+      }
+      
+      // Convert to percentage (prices are 0-1)
+      const probability = Math.round(yesPrice * 100);
+      
+      let probabilityLevel = 'low';
+      if (probability > 60) probabilityLevel = 'high';
+      else if (probability >= 40) probabilityLevel = 'medium';
+      
+      // Calculate total volume (AMM + CLOB)
+      const volumeAmm = parseFloat(market.volumeAmm || 0);
+      const volumeClob = parseFloat(market.volumeClob || 0);
+      const volume = volumeAmm + volumeClob;
+      
+      const formattedVolume = volume >= 1000000 
+        ? `$${(volume / 1000000).toFixed(1)}M`
+        : volume >= 1000
+        ? `$${(volume / 1000).toFixed(1)}K`
+        : `$${volume.toFixed(0)}`;
+      
+      // Get category from tags or events
+      const tags = market.tags || [];
+      const category = tags[0] || market.events?.[0]?.title || 'SPORTS';
+      
+      return {
+        id: market.id || market.conditionId,
+        question: market.question,
+        category: category.toUpperCase(),
+        categoryIcon: getCategoryIcon(category),
+        sport: detectSport(market),
+        probability,
+        probabilityLevel,
+        probabilityLabel: getProbabilityLabel(probability),
+        volume: formattedVolume,
+        traders: market.numTraders || 0,
+        status: market.closed ? 'closed' : 'live',
+        description: market.description,
+        liquidity: (parseFloat(market.liquidityAmm || 0) + parseFloat(market.liquidityClob || 0))
+      };
+    }
+
+    function detectSport(market) {
+      const text = `${market.question} ${market.description || ''} ${market.tags?.join(' ') || ''}`.toLowerCase();
+      
+      if (text.match(/football|nfl|super bowl/)) return 'football';
+      if (text.match(/basketball|nba|lakers|celtics/)) return 'basketball';
+      if (text.match(/soccer|premier league|champions league|fifa/)) return 'soccer';
+      if (text.match(/baseball|mlb|world series/)) return 'baseball';
+      if (text.match(/mma|ufc|boxing/)) return 'mma';
+      if (text.match(/tennis|wimbledon|us open/)) return 'tennis';
+      if (text.match(/hockey|nhl/)) return 'hockey';
+      
+      return 'other';
+    }
+
+    function getCategoryIcon(category) {
+      const icons = {
+        'football': '🏈', 'nfl': '🏈',
+        'basketball': '🏀', 'nba': '🏀',
+        'soccer': '⚽', 'premier': '⚽',
+        'baseball': '⚾', 'mlb': '⚾',
+        'mma': '🥊', 'boxing': '🥊', 'ufc': '🥊',
+        'tennis': '🎾',
+        'hockey': '🏒', 'nhl': '🏒'
+      };
+      
+      const lower = category.toLowerCase();
+      for (const [key, icon] of Object.entries(icons)) {
+        if (lower.includes(key)) return icon;
+      }
+      return '⚽';
+    }
+
+    function getProbabilityLabel(probability) {
+      if (probability >= 80) return 'very likely YES';
+      if (probability >= 60) return 'likely YES';
+      if (probability >= 40) return 'uncertain';
+      if (probability >= 20) return 'likely NO';
+      return 'very likely NO';
+    }
+
+    function renderMarkets(markets) {
+      const grid = document.getElementById('market-grid');
+      grid.innerHTML = '';
+      
+      markets.forEach(market => {
+        const card = createMarketCard(market);
+        grid.appendChild(card);
+      });
+      
+      hideLoading();
+      grid.style.display = 'grid';
+    }
+
+    function createMarketCard(market) {
+      const article = document.createElement('article');
+      article.className = 'market-card';
+      article.setAttribute('role', 'article');
+      article.setAttribute('tabindex', '0');
+      
+      article.innerHTML = `
+        <header class="market-card__header">
+          <span class="market-card__category">
+            <span class="market-card__category-icon">${market.categoryIcon}</span>
+            <span>${market.category}</span>
+          </span>
+          <span class="market-card__status market-card__status--${market.status}">${market.status.toUpperCase()}</span>
+        </header>
+        
+        <h3 class="market-card__question">${market.question}</h3>
+        
+        <div class="market-card__probability">
+          <div class="market-card__probability-value market-card__probability-value--${market.probabilityLevel}">
+            ${market.probability}%
+          </div>
+          <div class="market-card__probability-label">${market.probabilityLabel}</div>
+        </div>
+        
+        ${market.description ? `
+          <details class="market-card__intelligence">
+            <summary class="market-card__intelligence-summary">
+              <span>Market Details</span>
+              <svg class="market-card__intelligence-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <div class="market-card__intelligence-content">
+              <p class="text-body-sm text-secondary" style="line-height: 1.6;">
+                ${market.description.substring(0, 300)}${market.description.length > 300 ? '...' : ''}
+              </p>
+            </div>
+          </details>
+        ` : ''}
+        
+        <footer class="market-card__footer">
+          <div class="market-card__metadata">
+            <span class="market-card__metadata-item">
+              <span class="market-card__metadata-icon">💰</span>
+              <span>${market.volume}</span>
+            </span>
+            <span class="market-card__metadata-item">
+              <span class="market-card__metadata-icon">👥</span>
+              <span>${market.traders.toLocaleString()} traders</span>
+            </span>
+          </div>
+          <button class="btn btn-primary market-card__cta">
+            Predict
+          </button>
+        </footer>
+      `;
+      
+      return article;
+    }
+
+    function showLoading() {
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('error').style.display = 'none';
+      document.getElementById('empty').style.display = 'none';
+      document.getElementById('market-grid').style.display = 'none';
+    }
+
+    function hideLoading() {
+      document.getElementById('loading').style.display = 'none';
+    }
+
+    function showError(message) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error').style.display = 'block';
+      document.getElementById('empty').style.display = 'none';
+      document.getElementById('market-grid').style.display = 'none';
+      document.getElementById('error-message').textContent = message || 
+        'There was an error connecting to the API. Please make sure the backend server is running.';
+    }
+
+    function showEmpty() {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error').style.display = 'none';
+      document.getElementById('empty').style.display = 'block';
+      document.getElementById('market-grid').style.display = 'none';
+    }
+
+    // Filter functionality
+    document.getElementById('filters').addEventListener('click', (e) => {
+      const btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+      
+      // Update active state
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        b.classList.remove('filter-btn--active');
+      });
+      btn.classList.add('filter-btn--active');
+      
+      // Filter markets
+      const sport = btn.dataset.sport;
+      currentFilter = sport;
+      
+      if (sport === 'all') {
+        renderMarkets(allMarkets);
+      } else {
+        const filtered = allMarkets.filter(market => market.sport === sport);
+        
+        if (filtered.length === 0) {
+          showEmpty();
+        } else {
+          renderMarkets(filtered);
+        }
+      }
+    });
+
+    // Make loadMarkets available globally for retry button
+    window.loadMarkets = loadMarkets;
+  </script>
+</body>
+</html>

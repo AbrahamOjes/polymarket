@@ -1,0 +1,32 @@
+{
+  "name": "polymarket-ui-research",
+  "version": "1.0.0",
+  "description": "Research-backed prediction market UI with live Polymarket data",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server-polymarket.js",
+    "start:sdk": "node server-sdk.js",
+    "start:old": "node server.js",
+    "dev": "nodemon server-polymarket.js",
+    "install-deps": "npm install"
+  },
+  "keywords": [
+    "polymarket",
+    "prediction-markets",
+    "ux-research",
+    "ui-design"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@goat-sdk/core": "^0.5.0",
+    "@goat-sdk/plugin-polymarket": "^0.3.14",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
