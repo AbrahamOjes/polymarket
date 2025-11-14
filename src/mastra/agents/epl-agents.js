@@ -29,9 +29,6 @@ const { analyzeMarketTool, scanMarketsTool } = require('../tools/market-analysis
 const { placeTradeTool } = require('../tools/trade-execution.tool');
 const { validateTradeTool, calculateKellyCriterionTool } = require('../tools/risk-management.tool');
 
-// Import context tools
-const { twitterSentimentTool, newsAggregationTool } = require('../tools/context-tools');
-
 /**
  * EPL Research Agent
  * Deep analysis of EPL teams, matches, and betting markets
@@ -89,8 +86,6 @@ Always provide actionable insights for trading decisions.`,
     eplHeadToHeadTool,
     eplMarketFinderTool,
     eplValueBetFinderTool,
-    twitterSentimentTool,
-    newsAggregationTool,
     analyzeMarketTool
   }
 });
@@ -216,9 +211,7 @@ Be proactive and thorough in your monitoring.`,
     eplMarketFinderTool,
     eplValueBetFinderTool,
     eplOddsAnalysisTool,
-    scanMarketsTool,
-    twitterSentimentTool,
-    newsAggregationTool
+    scanMarketsTool
   }
 });
 
