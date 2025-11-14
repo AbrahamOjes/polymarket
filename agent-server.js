@@ -7,10 +7,18 @@ const express = require('express');
 const cors = require('cors');
 const { mastra } = require('./src/mastra');
 const { getAgentMemory } = require('./src/mastra/memory/agent-memory');
+const { PolymarketCLOBClient } = require('./src/polymarket/clob-client');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.AGENT_PORT || 3001;
+
+// Initialize Polymarket client
+const polymarketClient = new PolymarketCLOBClient(
+  process.env.POLYMARKET_API_KEY,
+  process.env.POLYMARKET_SECRET,
+  process.env.POLYMARKET_PASSPHRASE
+);
 
 // Initialize agent memory
 const memory = getAgentMemory();
@@ -583,6 +591,83 @@ app.get('/api/polymarket/balance/:address', async (req, res) => {
     console.error('Error getting Polymarket balance:', error);
     res.status(500).json({ 
       error: 'Failed to get balance',
+      message: error.message 
+    });
+  }
+});
+
+/**
+ * GET /api/polymarket/epl-markets
+ * Get real EPL markets from Polymarket
+ */
+app.get('/api/polymarket/epl-markets', async (req, res) => {
+  try {
+    const markets = await polymarketClient.getEPLMarkets();
+    
+    res.json({
+      count: markets.length,
+      markets: markets.map(m => ({
+        id: m.id,
+        question: m.question,
+        description: m.description?.substring(0, 200),
+        endDate: m.endDate,
+        volume: m.volumeNum || 0,
+        active: m.active,
+        slug: m.slug
+      })),
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error fetching EPL markets:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch EPL markets',
+      message: error.message 
+    });
+  }
+});
+
+/**
+ * GET /api/polymarket/market/:id
+ * Get detailed market information
+ */
+app.get('/api/polymarket/market/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const market = await polymarketClient.getMarket(id);
+    
+    if (!market) {
+      return res.status(404).json({ error: 'Market not found' });
+    }
+    
+    res.json({
+      market,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error fetching market:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch market',
+      message: error.message 
+    });
+  }
+});
+
+/**
+ * GET /api/polymarket/positions
+ * Get user's current positions
+ */
+app.get('/api/polymarket/positions', async (req, res) => {
+  try {
+    const positions = await polymarketClient.getPositions();
+    
+    res.json({
+      positions,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error fetching positions:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch positions',
       message: error.message 
     });
   }
