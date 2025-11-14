@@ -533,6 +533,62 @@ app.get('/api/wallet/balance/:userId', async (req, res) => {
 });
 
 /**
+ * GET /api/polymarket/balance/:address
+ * Get real Polymarket balance for a wallet address
+ */
+app.get('/api/polymarket/balance/:address', async (req, res) => {
+  try {
+    const { address } = req.params;
+    
+    // Check USDC balance on Polygon (Polymarket uses USDC)
+    const fetch = require('node-fetch');
+    
+    // USDC contract on Polygon
+    const usdcContract = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
+    
+    // Use a simple RPC call to get balance
+    const response = await fetch('https://polygon-rpc.com', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        method: 'eth_call',
+        params: [{
+          to: usdcContract,
+          data: `0x70a08231000000000000000000000000${address.slice(2)}`
+        }, 'latest'],
+        id: 1
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (data.result) {
+      // Convert from hex to decimal and adjust for 6 decimals (USDC has 6 decimals)
+      const balanceWei = parseInt(data.result, 16);
+      const balance = balanceWei / 1000000; // USDC has 6 decimals
+      
+      res.json({
+        address,
+        balance: balance.toFixed(2),
+        currency: 'USDC',
+        network: 'Polygon',
+        timestamp: new Date().toISOString()
+      });
+    } else {
+      throw new Error('Failed to fetch balance');
+    }
+    
+  } catch (error) {
+    console.error('Error getting Polymarket balance:', error);
+    res.status(500).json({ 
+      error: 'Failed to get balance',
+      message: error.message 
+    });
+  }
+});
+
+/**
  * POST /api/epl/research
  * Deep EPL research for a match or team
  */
