@@ -7,8 +7,13 @@
     "start": "node server-polymarket.js",
     "start:sdk": "node server-sdk.js",
     "start:old": "node server.js",
+    "start:agent": "node agent-server.js",
     "dev": "nodemon server-polymarket.js",
-    "install-deps": "npm install"
+    "dev:agent": "nodemon agent-server.js",
+    "install-deps": "npm install",
+    "build:frontend": "mkdir -p public && cp epl-dashboard.html public/index.html",
+    "deploy:frontend": "npm run build:frontend && netlify deploy --prod",
+    "deploy:backend": "railway up"
   },
   "keywords": [
     "polymarket",
@@ -19,12 +24,16 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@ai-sdk/openai": "^2.0.65",
     "@goat-sdk/core": "^0.5.0",
     "@goat-sdk/plugin-polymarket": "^0.3.14",
+    "@mastra/core": "^0.24.0",
+    "ai": "^5.0.93",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "node-fetch": "^2.7.0"
+    "node-fetch": "^2.7.0",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

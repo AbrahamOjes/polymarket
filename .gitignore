@@ -22,3 +22,19 @@ Thumbs.db
 # Build files
 dist/
 build/
+public/
+
+# Memory data (backup separately)
+data/
+
+# PM2
+.pm2/
+pids/
+*.pid
+
+# Railway
+.railway/
+
+# Temporary files
+*.tmp
+.cache/

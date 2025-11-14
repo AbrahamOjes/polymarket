@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EPL Trading Agent Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .status-bar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4ade80;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .button {
+            width: 100%;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+        }
+
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .button.secondary {
+            background: #6b7280;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #4b5563;
+            font-weight: 500;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .output {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info-box {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .success-box {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid #fbbf24;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .wallet-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .wallet-display h3 {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .wallet-display .amount {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚽ EPL Trading Agent</h1>
+            <p class="subtitle">Autonomous AI Trading for English Premier League Markets</p>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span id="status-text">Agent Online</span>
+            </div>
+            <div>11 AI Agents | 17 Tools | 200+ EPL Markets</div>
+            <div>🛡️ Dry-Run Mode</div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('wallet')">💰 Wallet</button>
+            <button class="tab" onclick="showTab('scout')">🔍 Scout</button>
+            <button class="tab" onclick="showTab('trade')">⚽ Trade</button>
+            <button class="tab" onclick="showTab('live')">📊 Live Monitor</button>
+            <button class="tab" onclick="showTab('portfolio')">📈 Portfolio</button>
+        </div>
+
+        <!-- Wallet Tab -->
+        <div id="wallet" class="tab-content active">
+            <div class="grid">
+                <div class="card">
+                    <h2>💰 Initialize Wallet</h2>
+                    <div class="info-box">
+                        Create your trading wallet to start
+                    </div>
+                    <div class="input-group">
+                        <label>User ID</label>
+                        <input type="text" id="wallet-user-id" placeholder="e.g., yourname">
+                    </div>
+                    <div class="input-group">
+                        <label>Initial Balance ($)</label>
+                        <input type="number" id="wallet-initial-balance" value="1000" min="0">
+                    </div>
+                    <button class="button" onclick="initializeWallet()">Create Wallet</button>
+                    <div class="loading" id="wallet-loading">
+                        <div class="spinner"></div>
+                        <div>Creating wallet...</div>
+                    </div>
+                    <div class="output" id="wallet-output"></div>
+                </div>
+
+                <div class="card">
+                    <h2>💵 Add Funds</h2>
+                    <div class="input-group">
+                        <label>User ID</label>
+                        <input type="text" id="add-funds-user-id" placeholder="e.g., yourname">
+                    </div>
+                    <div class="input-group">
+                        <label>Amount ($)</label>
+                        <input type="number" id="add-funds-amount" value="500" min="0">
+                    </div>
+                    <button class="button" onclick="addFunds()">Add Funds</button>
+                    <div class="loading" id="add-funds-loading">
+                        <div class="spinner"></div>
+                        <div>Adding funds...</div>
+                    </div>
+                    <div class="output" id="add-funds-output"></div>
+                </div>
+
+                <div class="card">
+                    <h2>💳 Check Balance</h2>
+                    <div class="input-group">
+                        <label>User ID</label>
+                        <input type="text" id="balance-user-id" placeholder="e.g., yourname">
+                    </div>
+                    <button class="button" onclick="checkBalance()">Check Balance</button>
+                    <div class="loading" id="balance-loading">
+                        <div class="spinner"></div>
+                        <div>Checking balance...</div>
+                    </div>
+                    <div id="balance-display"></div>
+                    <div class="output" id="balance-output"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scout Tab -->
+        <div id="scout" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h2>🔍 Scout Opportunities</h2>
+                    <div class="success-box">
+                        Find the best EPL trading opportunities right now
+                    </div>
+                    <div class="input-group">
+                        <label>Minimum Edge (%)</label>
+                        <input type="number" id="scout-min-edge" value="5" min="0">
+                    </div>
+                    <button class="button" onclick="scoutOpportunities()">Scout Markets</button>
+                    <div class="loading" id="scout-loading">
+                        <div class="spinner"></div>
+                        <div>Scanning 200+ EPL markets...</div>
+                    </div>
+                    <div class="output" id="scout-output"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trade Tab -->
+        <div id="trade" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h2>⚽ Execute EPL Trade</h2>
+                    <div class="warning-box">
+                        ⚠️ Dry-run mode enabled. No real money at risk.
+                    </div>
+                    <div class="input-group">
+                        <label>User ID</label>
+                        <input type="text" id="trade-user-id" placeholder="e.g., yourname">
+                    </div>
+                    <div class="input-group">
+                        <label>Home Team</label>
+                        <input type="text" id="trade-home-team" placeholder="e.g., Arsenal">
+                    </div>
+                    <div class="input-group">
+                        <label>Away Team</label>
+                        <input type="text" id="trade-away-team" placeholder="e.g., Manchester City">
+                    </div>
+                    <div class="input-group">
+                        <label>Max Amount ($)</label>
+                        <input type="number" id="trade-max-amount" value="100" min="10">
+                    </div>
+                    <button class="button" onclick="executeTrade()">Execute Trade</button>
+                    <div class="loading" id="trade-loading">
+                        <div class="spinner"></div>
+                        <div>Analyzing match and executing trade...</div>
+                    </div>
+                    <div class="output" id="trade-output"></div>
+                </div>
+
+                <div class="card">
+                    <h2>📊 Research Match</h2>
+                    <div class="info-box">
+                        Deep analysis before trading
+                    </div>
+                    <div class="input-group">
+                        <label>Home Team</label>
+                        <input type="text" id="research-home-team" placeholder="e.g., Liverpool">
+                    </div>
+                    <div class="input-group">
+                        <label>Away Team</label>
+                        <input type="text" id="research-away-team" placeholder="e.g., Chelsea">
+                    </div>
+                    <button class="button secondary" onclick="researchMatch()">Research</button>
+                    <div class="loading" id="research-loading">
+                        <div class="spinner"></div>
+                        <div>Analyzing teams, odds, and markets...</div>
+                    </div>
+                    <div class="output" id="research-output"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Monitor Tab -->
+        <div id="live" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h2>📊 Monitor Positions</h2>
+                    <div class="input-group">
+                        <label>User ID</label>
+                        <input type="text" id="live-user-id" placeholder="e.g., yourname">
+                    </div>
+                    <button class="button" onclick="monitorPositions()">Check Positions</button>
+                    <div class="loading" id="live-loading">
+                        <div class="spinner"></div>
+                        <div>Monitoring positions...</div>
+                    </div>
+                    <div class="output" id="live-output"></div>
+                </div>
+
+                <div class="card">
+                    <h2>🚨 Live Alerts</h2>
+                    <div class="input-group">
+                        <label>User ID</label>
+                        <input type="text" id="alerts-user-id" placeholder="e.g., yourname">
+                    </div>
+                    <button class="button" onclick="getAlerts()">Get Alerts</button>
+                    <div class="loading" id="alerts-loading">
+                        <div class="spinner"></div>
+                        <div>Checking for alerts...</div>
+                    </div>
+                    <div class="output" id="alerts-output"></div>
+                </div>
+
+                <div class="card">
+                    <h2>🛡️ Auto-Exit</h2>
+                    <div class="info-box">
+                        Automatically exit positions at stop-loss/take-profit
+                    </div>
+                    <div class="input-group">
+                        <label>User ID</label>
+                        <input type="text" id="auto-exit-user-id" placeholder="e.g., yourname">
+                    </div>
+                    <div class="input-group">
+                        <label>Stop-Loss (%)</label>
+                        <input type="number" id="auto-exit-stop-loss" value="-15">
+                    </div>
+                    <div class="input-group">
+                        <label>Take-Profit (%)</label>
+                        <input type="number" id="auto-exit-take-profit" value="30">
+                    </div>
+                    <button class="button" onclick="autoExit()">Enable Auto-Exit</button>
+                    <div class="loading" id="auto-exit-loading">
+                        <div class="spinner"></div>
+                        <div>Setting up auto-exit...</div>
+                    </div>
+                    <div class="output" id="auto-exit-output"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Portfolio Tab -->
+        <div id="portfolio" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h2>📈 Portfolio Summary</h2>
+                    <div class="input-group">
+                        <label>User ID</label>
+                        <input type="text" id="portfolio-user-id" placeholder="e.g., yourname">
+                    </div>
+                    <button class="button" onclick="getPortfolio()">View Portfolio</button>
+                    <div class="loading" id="portfolio-loading">
+                        <div class="spinner"></div>
+                        <div>Loading portfolio...</div>
+                    </div>
+                    <div class="output" id="portfolio-output"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3001/api';
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            const options = {
+                method,
+                headers: { 'Content-Type': 'application/json' }
+            };
+            if (body) options.body = JSON.stringify(body);
+            
+            const response = await fetch(`${API_BASE}${endpoint}`, options);
+            return await response.json();
+        }
+
+        async function initializeWallet() {
+            const userId = document.getElementById('wallet-user-id').value;
+            const initialBalance = parseInt(document.getElementById('wallet-initial-balance').value);
+            
+            if (!userId) {
+                alert('Please enter a User ID');
+                return;
+            }
+
+            const loading = document.getElementById('wallet-loading');
+            const output = document.getElementById('wallet-output');
+            
+            loading.classList.add('active');
+            output.textContent = '';
+
+            try {
+                const data = await apiCall('/wallet/initialize', 'POST', { userId, initialBalance });
+                output.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        async function addFunds() {
+            const userId = document.getElementById('add-funds-user-id').value;
+            const amount = parseInt(document.getElementById('add-funds-amount').value);
+            
+            if (!userId) {
+                alert('Please enter a User ID');
+                return;
+            }
+
+            const loading = document.getElementById('add-funds-loading');
+            const output = document.getElementById('add-funds-output');
+            
+            loading.classList.add('active');
+            output.textContent = '';
+
+            try {
+                const data = await apiCall('/wallet/add-funds', 'POST', { userId, amount });
+                output.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        async function checkBalance() {
+            const userId = document.getElementById('balance-user-id').value;
+            
+            if (!userId) {
+                alert('Please enter a User ID');
+                return;
+            }
+
+            const loading = document.getElementById('balance-loading');
+            const output = document.getElementById('balance-output');
+            const display = document.getElementById('balance-display');
+            
+            loading.classList.add('active');
+            output.textContent = '';
+            display.innerHTML = '';
+
+            try {
+                const data = await apiCall(`/wallet/balance/${userId}`);
+                output.textContent = data.result || JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        async function scoutOpportunities() {
+            const minEdge = document.getElementById('scout-min-edge').value;
+            
+            const loading = document.getElementById('scout-loading');
+            const output = document.getElementById('scout-output');
+            
+            loading.classList.add('active');
+            output.textContent = '';
+
+            try {
+                const data = await apiCall(`/epl/scout?minEdge=${minEdge}`);
+                output.textContent = data.opportunities || JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        async function executeTrade() {
+            const userId = document.getElementById('trade-user-id').value;
+            const homeTeam = document.getElementById('trade-home-team').value;
+            const awayTeam = document.getElementById('trade-away-team').value;
+            const maxAmount = parseInt(document.getElementById('trade-max-amount').value);
+            
+            if (!userId || !homeTeam || !awayTeam) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            const loading = document.getElementById('trade-loading');
+            const output = document.getElementById('trade-output');
+            
+            loading.classList.add('active');
+            output.textContent = '';
+
+            try {
+                const data = await apiCall('/epl/trade', 'POST', { userId, homeTeam, awayTeam, maxAmount });
+                output.textContent = data.result || JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        async function researchMatch() {
+            const homeTeam = document.getElementById('research-home-team').value;
+            const awayTeam = document.getElementById('research-away-team').value;
+            
+            if (!homeTeam || !awayTeam) {
+                alert('Please enter both teams');
+                return;
+            }
+
+            const loading = document.getElementById('research-loading');
+            const output = document.getElementById('research-output');
+            
+            loading.classList.add('active');
+            output.textContent = '';
+
+            try {
+                const data = await apiCall('/epl/research', 'POST', { homeTeam, awayTeam });
+                output.textContent = data.research || JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        async function monitorPositions() {
+            const userId = document.getElementById('live-user-id').value;
+            
+            if (!userId) {
+                alert('Please enter a User ID');
+                return;
+            }
+
+            const loading = document.getElementById('live-loading');
+            const output = document.getElementById('live-output');
+            
+            loading.classList.add('active');
+            output.textContent = '';
+
+            try {
+                const data = await apiCall(`/live/positions/${userId}`);
+                output.textContent = data.positions || JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        async function getAlerts() {
+            const userId = document.getElementById('alerts-user-id').value;
+            
+            if (!userId) {
+                alert('Please enter a User ID');
+                return;
+            }
+
+            const loading = document.getElementById('alerts-loading');
+            const output = document.getElementById('alerts-output');
+            
+            loading.classList.add('active');
+            output.textContent = '';
+
+            try {
+                const data = await apiCall(`/live/alerts/${userId}`);
+                output.textContent = data.alerts || JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        async function autoExit() {
+            const userId = document.getElementById('auto-exit-user-id').value;
+            const stopLoss = parseInt(document.getElementById('auto-exit-stop-loss').value);
+            const takeProfit = parseInt(document.getElementById('auto-exit-take-profit').value);
+            
+            if (!userId) {
+                alert('Please enter a User ID');
+                return;
+            }
+
+            const loading = document.getElementById('auto-exit-loading');
+            const output = document.getElementById('auto-exit-output');
+            
+            loading.classList.add('active');
+            output.textContent = '';
+
+            try {
+                const data = await apiCall('/live/auto-exit', 'POST', { userId, stopLoss, takeProfit, dryRun: true });
+                output.textContent = data.result || JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        async function getPortfolio() {
+            const userId = document.getElementById('portfolio-user-id').value;
+            
+            if (!userId) {
+                alert('Please enter a User ID');
+                return;
+            }
+
+            const loading = document.getElementById('portfolio-loading');
+            const output = document.getElementById('portfolio-output');
+            
+            loading.classList.add('active');
+            output.textContent = '';
+
+            try {
+                const data = await apiCall(`/epl/portfolio/${userId}`);
+                output.textContent = data.portfolio || JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        // Check agent status on load
+        async function checkStatus() {
+            try {
+                const data = await apiCall('/agent/status');
+                document.getElementById('status-text').textContent = 
+                    data.status === 'online' ? `Agent Online (${data.agents.length} agents)` : 'Agent Offline';
+            } catch (error) {
+                document.getElementById('status-text').textContent = 'Agent Offline';
+            }
+        }
+
+        checkStatus();
+        setInterval(checkStatus, 30000);
+    </script>
+</body>
+</html>
