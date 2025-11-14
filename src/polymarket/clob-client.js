@@ -87,20 +87,29 @@ class PolymarketCLOBClient {
   async getEPLMarkets() {
     const allMarkets = await this.getMarkets();
     
-    const eplKeywords = [
-      'premier league', 'epl', 'arsenal', 'liverpool', 'chelsea', 
-      'manchester city', 'manchester united', 'tottenham', 'newcastle',
-      'brighton', 'aston villa', 'west ham', 'everton', 'leicester',
-      'wolves', 'fulham', 'brentford', 'crystal palace', 'bournemouth',
-      'nottingham forest', 'luton', 'burnley', 'sheffield'
+    // More specific EPL matching
+    const eplTeams = [
+      'arsenal', 'liverpool', 'chelsea', 'manchester city', 'manchester united',
+      'tottenham', 'newcastle', 'brighton', 'aston villa', 'west ham',
+      'everton', 'leicester', 'wolves', 'fulham', 'brentford',
+      'crystal palace', 'bournemouth', 'nottingham forest', 'luton',
+      'burnley', 'sheffield united', 'man city', 'man united', 'spurs'
     ];
 
     return allMarkets.filter(market => {
       const question = market.question?.toLowerCase() || '';
       const description = market.description?.toLowerCase() || '';
-      return eplKeywords.some(keyword => 
-        question.includes(keyword) || description.includes(keyword)
-      );
+      const text = question + ' ' + description;
+      
+      // Must contain "premier league" or "epl" OR contain team names with football/soccer context
+      const hasLeagueKeyword = text.includes('premier league') || text.includes('epl');
+      const hasTeamAndContext = eplTeams.some(team => text.includes(team)) && 
+                                 (text.includes('football') || text.includes('soccer') || 
+                                  text.includes('match') || text.includes('win') || 
+                                  text.includes('beat') || text.includes('finish') ||
+                                  text.includes('top 4') || text.includes('champion'));
+      
+      return hasLeagueKeyword || hasTeamAndContext;
     });
   }
 
