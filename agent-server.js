@@ -26,6 +26,13 @@ app.use(express.json());
 app.use(express.static('.'));
 
 /**
+ * GET / - Redirect to dashboard
+ */
+app.get('/', (req, res) => {
+  res.redirect('/epl-dashboard.html');
+});
+
+/**
  * POST /api/agent/chat
  * Chat with the trading agent
  */
